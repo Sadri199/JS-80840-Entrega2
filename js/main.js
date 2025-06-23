@@ -69,10 +69,9 @@ const equipAtk = (item) => { //Working
         let validate = name.includes(item)
 
         if (validate){
+            playerStatus.splice(1,1,["ATK",20])
             let sumAtk = playerStatus[1][1] + stat
-            console.log(sumAtk)
             playerStatus.splice(1,1,["ATK",sumAtk])
-            console.log(playerStatus)
         }
     }
 }
@@ -221,9 +220,38 @@ const mainBattle = (enemy) =>{ //Working
 
 //---------Start of the game---------
 nameEdit(prompt(":D that is you, someone looking for treasure and stuff, but...\nYou never said your name, what should I call you?"))
-
+console.log(`${playerStatus[3][1]}, you have entered the forbidden cave, where great treasures await for those who are brave enough.\n`)
 
 //switch para el menú principal
+let loop = true
+    while (loop) {
+    switch (prompt("What are you going to do?\n1 to check your inventory\n2 to check your stats\n3 to advance through the cave\n4 to exit the game.")){
+        case "1":
+            inventoryCheck()
+            let decisionEq = prompt("Do you want to equip an item? yes or no").toLowerCase()
+            if (decisionEq == "yes"){
+                equip(prompt("Grab an item from your inventory and equip it to your hand!\n").toLowerCase())
+            }
+            else{
+                console.log("Returning to main menu.")
+            }
+            break
+        case "2":
+            statCheck()
+            break
+        case "3":
+            console.log("Not yet.") //start the fight loop, think about rewards and where implement them, maybe a separate function inside win?
+            loop = false
+            break
+        case "4":
+            console.log("Goodbye, see you soon :)")
+            loop = false
+            break
+        default:
+            console.log("Please choose an available option.")
+    }
+}
+
 
 //Testing
 
