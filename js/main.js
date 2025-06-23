@@ -1,4 +1,5 @@
-// Player Data
+//i - (i * 2) to change negative to positive
+// Player Data 
 const inventory = ["short sword", "banana"]
 const equippedItem = []
 
@@ -16,6 +17,10 @@ let defCounter = 0
 const enemies = ["Goblin", "Bear", "Dragon"]
 
 let instanceEnemy = []
+
+let enemyDefeated = false
+
+let loop = true
 
 const goblinStats = [
     ["HP", 25],
@@ -131,64 +136,7 @@ const critDef = () => { //Working
     }
 }
 
-const assignEnemy = (enemy) =>{ //Working
-    switch(enemy){
-        case "Goblin":
-            instanceEnemy = goblinStats
-            break
-        case "Bear":
-            instanceEnemy = bearStats
-            break
-        case "Dragon":
-            instanceEnemy = dragonStats
-            break
-        default:
-            console.log("That isn't a valid enemy, also you shouldn't be reading this...")
-    }
-    return instanceEnemy
-}
-
-const attackCalc = (enemy) =>{ //Working
-    console.log(`You attack the ${enemy}!!`)
-    critAtk()
-    let atkDifference = playerStatus[1][1] - instanceEnemy[2][1]
-    console.log(`The difference between your attack "${playerStatus[1][1]}" and the enemy's defense "${instanceEnemy[2][1]}" is ${atkDifference} !`)
-    let hpRemain = instanceEnemy[0][1] - atkDifference
-    console.log(`The current HP of the ${enemy} is ${hpRemain} !`)
-    instanceEnemy.splice(0,1,["HP", hpRemain])
-    console.log(instanceEnemy)
-}
-
-const defenseCalc = (enemy) =>{ //Working
-    console.log(`The ${enemy} attacks you!!`)
-    critDef()
-    let defDifference = playerStatus[2][1] - instanceEnemy[1][1]
-    console.log(`The difference between your defense "${playerStatus[2][1]}" and the enemy's attack "${instanceEnemy[1][1]}" is ${defDifference} !`)
-    let hpRemain = playerStatus[0][1] - defDifference
-    console.log(`Your current HP are ${hpRemain} !`)
-    playerStatus.splice(0,1,["HP", hpRemain])
-    console.log(playerStatus)
-}
-
-const winBattle = (enemy) => { //Working
-    if (instanceEnemy[0][1] <= 0){
-        console.log(`Wow, you defeated the ${enemy}!`)
-        enemyDefeated = true
-        return enemyDefeated 
-    }
-    else {
-        console.log(`The ${enemy} can still fight!`)
-    }
-}
-
-const badEnd = () => { //Working
-    if (playerStatus[0][1] <= 0 ){
-        console.log("You died :(")
-    }
-}
-
-const chooseEnemy = () => { //Making
-    let enemyDefeated = false
+const chooseEnemy = () => { //Working
     if (enemyDefeated) {
         enemies.shift()
         let enemy = enemies[0]
@@ -201,7 +149,89 @@ const chooseEnemy = () => { //Making
     }
 }
 
-//El orden sería choose > assign > main battle > attackCalc > winBattle > defenseCalc > badEnd y loop
+const assignEnemy = (enemy) =>{ //Working
+    switch(enemy){
+        case "Goblin":
+            instanceEnemy = goblinStats
+            break
+        case "Bear":
+            instanceEnemy = bearStats
+            break
+        case "Dragon":
+            instanceEnemy = dragonStats
+            break
+        default:
+            goodEnd(enemy)
+    }
+    return instanceEnemy
+}
+
+const notNegative = (value) => { //Working
+    if (value < 0){
+        let newValue = value - (value * 2)
+        return newValue
+    }
+    else{
+        return value
+    }
+}
+
+const attackCalc = (enemy) =>{ //Working
+    console.log(`You attack the ${enemy}!!`)
+    let extraAtk = critAtk()
+    let atkDifference = extraAtk - instanceEnemy[2][1]
+    let realAtk = notNegative(atkDifference)
+    console.log(`The difference between your attack "${extraAtk}" and the enemy's defense "${instanceEnemy[2][1]}" is ${realAtk} !`)
+    let hpRemain = instanceEnemy[0][1] - realAtk
+    console.log(`The current HP of the ${enemy} is ${hpRemain} !`)
+    instanceEnemy.splice(0,1,["HP", hpRemain])
+}
+
+const defenseCalc = (enemy) =>{ //Working
+    console.log(`The ${enemy} attacks you!!`)
+    let extraDef = critDef()
+    let defDifference = extraDef - instanceEnemy[1][1]
+    let realDef = notNegative(defDifference)
+    console.log(`The difference between your defense "${extraDef}" and the enemy's attack "${instanceEnemy[1][1]}" is ${realDef} !`)
+    let hpRemain = playerStatus[0][1] - realDef
+    console.log(`Your current HP are ${hpRemain} !`)
+    playerStatus.splice(0,1,["HP", hpRemain])
+}
+
+const winBattle = (enemy) => { //Working
+    if (instanceEnemy[0][1] <= 0){
+        console.log(`Wow, you defeated the ${enemy}!`)
+        reward(enemy)
+        enemyDefeated = true
+        atkCounter = 0
+        defCounter = 0
+        return enemyDefeated 
+    }
+    else {
+        console.log(`The ${enemy} can still fight!`)
+    }
+}
+
+const badEnd = () => { //Working
+    if (playerStatus[0][1] <= 0 ){
+        console.log("You died :(\nGame over, please reload the page to start again!")
+        loop = false
+    }
+}
+
+const goodEnd = (enemy) =>{ //I don't know how to make it better so this will have to do for now.
+    if (enemy == undefined){
+        console.log("Wow, you made it, you killed everybody!\n You also got some gold, but I forgot to add it to your inventory, so just pretend :)\nNow the game is over, you got the good ending!")
+        loop = false
+    }
+}
+
+const reward = (enemy) => { //Working
+    if (enemy == "Bear" && instanceEnemy[0][1] <= 0){
+        console.log("The bear dropped a 'gattling gun'.")
+        inventory.push("gattling gun")
+    }
+}
 
 const mainBattle = (enemy) =>{ //Working
     attackCalc(enemy)
@@ -216,63 +246,75 @@ const mainBattle = (enemy) =>{ //Working
         badEnd()
     }
 }
+
+const loopBattle = () =>{ //Working
+    //El orden sería choose > assign > main battle > attackCalc > winBattle > defenseCalc > badEnd y loop
+    console.log("You go further inside the cave.\nA shady figure is in front of you.\nYou illuminate with your torch and see a...")
+    let actualEnemy = chooseEnemy()
+    console.log(`A ${actualEnemy} appeared!`)
+    assignEnemy(actualEnemy)
+    let decision = (prompt("What will you do, would you 'fight' or will you try to escape?").toLowerCase())
+        switch (decision){
+            case "fight":
+                console.log("Get ready to fight!\n")
+                mainBattle(actualEnemy)
+                break
+            default:
+                console.log("Going back to the main menu.")
+                break
+        }
+}
 //loops and Calls
 
 //---------Start of the game---------
 nameEdit(prompt(":D that is you, someone looking for treasure and stuff, but...\nYou never said your name, what should I call you?"))
 console.log(`${playerStatus[3][1]}, you have entered the forbidden cave, where great treasures await for those who are brave enough.\n`)
 
-//switch para el menú principal
-let loop = true
-    while (loop) {
-    switch (prompt("What are you going to do?\n1 to check your inventory\n2 to check your stats\n3 to advance through the cave\n4 to exit the game.")){
-        case "1":
-            inventoryCheck()
-            let decisionEq = prompt("Do you want to equip an item? yes or no").toLowerCase()
-            if (decisionEq == "yes"){
-                equip(prompt("Grab an item from your inventory and equip it to your hand!\n").toLowerCase())
-            }
-            else{
-                console.log("Returning to main menu.")
-            }
-            break
-        case "2":
-            statCheck()
-            break
-        case "3":
-            console.log("Not yet.") //start the fight loop, think about rewards and where implement them, maybe a separate function inside win?
-            loop = false
-            break
-        case "4":
-            console.log("Goodbye, see you soon :)")
-            loop = false
-            break
-        default:
-            console.log("Please choose an available option.")
-    }
+//---------Main Menu---------
+while (loop) {
+switch (prompt("What are you going to do?\n1 to check your inventory\n2 to check your stats\n3 to advance through the cave\n4 to exit the game.")){
+    case "1":
+        inventoryCheck()
+        let decisionEq = prompt("Do you want to equip an item? yes or no").toLowerCase()
+        if (decisionEq == "yes"){
+            equip(prompt("Grab an item from your inventory and equip it to your hand!\n").toLowerCase())
+        }
+        else{
+            console.log("No? Ok! Returning to main menu.\n")
+        }
+        break
+    case "2":
+        statCheck()
+        break
+    case "3": 
+        loopBattle()
+        break
+    case "4":
+        console.log("Goodbye, see you soon :)")
+        loop = false
+        break
+    case "5":
+        console.log("Debug mode, it gives a gattling gun.")
+        inventory.push("gattling gun")
+        break
+    default:
+        console.log("Please choose an available option.")
+}
 }
 
-
-//Testing
+//---------Testing---------
 
 //nameEdit(prompt('Please type your name or press "Ok" to continue with the default value: \n'))
-
 // equip(prompt("Grab an item from your inventory and equip it to your hand!\n").toLowerCase())
 // console.log(`This is your current equipped item: ${equippedItem}\n`)
 // statCheck()
 // inventoryCheck()
-
 //critAtk()
 //critDef()
 // attackCalc("Goblin")
 // assignEnemy("Goblin")
 // defenseCalc("Goblin")
-
-
-
-
 //badEnd()
-
 // let prueba = playerStatus[1][1] + itemStatDatabase[0][1]
 // playerStatus.splice(1,1,["ATK",prueba])
 // console.log(playerStatus)
