@@ -50,10 +50,10 @@ const itemStatDatabase =[
 const nameEdit = (name) => {
     if (name != "" && name != null){
         playerStatus.splice(3,1,["Name",name])
-        console.log("Your name will be" + " " + playerStatus[3][1])
+        alert("Your name will be" + " " + playerStatus[3][1])
     }
     else{
-        console.log("Your name will be" + " " + playerStatus[3][1])
+        alert("Your name will be" + " " + playerStatus[3][1])
     }
 }
 
@@ -87,7 +87,7 @@ function equip (item){ //Working
     if (exist != -1){
         inventory.splice(exist,1)
         equippedItem.push(item)
-        console.log(`You removed ${item} from inventory! \nYou added ${item} to your hand!\n`)
+        alert(`You removed ${item} from inventory! \nYou added ${item} to your hand!\n`)
         equipAtk(item)
     }
     else{
