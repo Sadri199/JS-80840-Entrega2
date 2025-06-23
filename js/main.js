@@ -15,7 +15,7 @@ let defCounter = 0
 // Enemy Data
 const enemies = ["Goblin", "Bear", "Dragon"]
 
-const instanceEnemy = []
+let instanceEnemy = []
 
 const goblinStats = [
     ["HP", 25],
@@ -132,18 +132,98 @@ const critDef = () => { //Working
     }
 }
 
-const attackCalc = (enemy) =>{ //Making
-    instanceEnemy = enemy
-    //Switch para distinguir tipo de enemigo y clonar array a instance enemy
+const assignEnemy = (enemy) =>{ //Working
+    switch(enemy){
+        case "Goblin":
+            instanceEnemy = goblinStats
+            break
+        case "Bear":
+            instanceEnemy = bearStats
+            break
+        case "Dragon":
+            instanceEnemy = dragonStats
+            break
+        default:
+            console.log("That isn't a valid enemy, also you shouldn't be reading this...")
+    }
+    return instanceEnemy
+}
 
-
+const attackCalc = (enemy) =>{ //Working
+    console.log(`You attack the ${enemy}!!`)
     critAtk()
-    let atkDifference = playerStatus[1][1] - enemy[2][1]
-    let hpRemain = atkDifference - enemy[0][1]
+    let atkDifference = playerStatus[1][1] - instanceEnemy[2][1]
+    console.log(`The difference between your attack "${playerStatus[1][1]}" and the enemy's defense "${instanceEnemy[2][1]}" is ${atkDifference} !`)
+    let hpRemain = instanceEnemy[0][1] - atkDifference
+    console.log(`The current HP of the ${enemy} is ${hpRemain} !`)
+    instanceEnemy.splice(0,1,["HP", hpRemain])
+    console.log(instanceEnemy)
+}
 
+const defenseCalc = (enemy) =>{ //Working
+    console.log(`The ${enemy} attacks you!!`)
+    critDef()
+    let defDifference = playerStatus[2][1] - instanceEnemy[1][1]
+    console.log(`The difference between your defense "${playerStatus[2][1]}" and the enemy's attack "${instanceEnemy[1][1]}" is ${defDifference} !`)
+    let hpRemain = playerStatus[0][1] - defDifference
+    console.log(`Your current HP are ${hpRemain} !`)
+    playerStatus.splice(0,1,["HP", hpRemain])
+    console.log(playerStatus)
+}
+
+const winBattle = (enemy) => { //Working
+    if (instanceEnemy[0][1] <= 0){
+        console.log(`Wow, you defeated the ${enemy}!`)
+        enemyDefeated = true
+        return enemyDefeated 
+    }
+    else {
+        console.log(`The ${enemy} can still fight!`)
+    }
+}
+
+const badEnd = () => { //Working
+    if (playerStatus[0][1] <= 0 ){
+        console.log("You died :(")
+    }
+}
+
+const chooseEnemy = () => { //Making
+    let enemyDefeated = false
+    if (enemyDefeated) {
+        enemies.shift()
+        let enemy = enemies[0]
+        enemyDefeated = false
+        return enemy
+    }
+    else{
+        let enemy = enemies[0]
+        return enemy
+    }
+}
+
+//El orden sería choose > assign > main battle > attackCalc > winBattle > defenseCalc > badEnd y loop
+
+const mainBattle = (enemy) =>{ //Working
+    attackCalc(enemy)
+    console.log(`Checking if the creature is still alive...`)
+    winBattle(enemy)
+    if (enemyDefeated){
+        console.log("After the creature's death you rest for a bit before continuing your mission")
+        playerStatus.splice(0,1,["HP", 100])
+    }
+    else{
+        defenseCalc(enemy)
+        badEnd()
+    }
 }
 //loops and Calls
 
+//---------Start of the game---------
+nameEdit(prompt(":D that is you, someone looking for treasure and stuff, but...\nYou never said your name, what should I call you?"))
+
+
+//switch para el menú principal
 
 //Testing
 
@@ -155,8 +235,15 @@ const attackCalc = (enemy) =>{ //Making
 // inventoryCheck()
 
 //critAtk()
-// critDef()
+//critDef()
+// attackCalc("Goblin")
+// assignEnemy("Goblin")
+// defenseCalc("Goblin")
 
+
+
+
+//badEnd()
 
 // let prueba = playerStatus[1][1] + itemStatDatabase[0][1]
 // playerStatus.splice(1,1,["ATK",prueba])
