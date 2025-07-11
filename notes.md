@@ -3,6 +3,7 @@
 [ ] - Evaluar Javascript, ver que se puede mejorar, que se saca.
     [ ] - Cambio de arrays a Clases en los stats, items, enemigos, todo.
     [ ] - Que datos se guardan en local? Stats? Items?
+    [ ] - Funciones de Orden Superior (Find, Filter)
     [ ] - Danger level (nuevo counter, para agregar enemigos a la lista de posibles encuentros, podría aumentar drop a medida que sube) Sería la dificultad.
     [ ] - Implementación de Math.random() en donde amerite. Encuentros, criticos, dropeo de gold e items. roundup y rounddown para no trabajar con floats.
     [ ] - Health System, ya no recupera vida cuando termina una pelea. Sistema con pociones y tal vez una fuente (encuentro random).

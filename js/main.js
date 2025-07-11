@@ -1,53 +1,78 @@
 //i - (i * 2) to change negative to positive
 // Player Data 
 const inventory = ["short sword", "banana"]
+
 const equippedItem = []
 
-let playerStatus = [
-    ["HP", 100],
-    ["ATK", 20],
-    ["DEF", 10],
-    ["Name", "Hero"]
-]
+const playerStatus = { //Array to Object Change
+    Name: "Hero",
+    HP: 100,
+    ATK: 20,
+    DEF: 10
+}
 
 let atkCounter = 0
 let defCounter = 0
 
 // Enemy Data
-const enemies = ["Goblin", "Bear", "Dragon"]
-
 let instanceEnemy = []
 
 let enemyDefeated = false
+ 
+const enemies = []
 
-let loop = true
+class Enemy {
+    static ID = 0
+    constructor (Name, HP, ATK, DEF, averageGold){
+        this.ID = ++Enemy.ID
+        this.Name = Name
+        this.HP = HP
+        this.ATK = ATK
+        this.DEF = DEF
+        this.averageGold = averageGold
+    }
+}
 
-const goblinStats = [
-    ["HP", 25],
-    ["ATK", 5],
-    ["DEF", 5]
-]
+const enemyPush = (Name, HP, ATK, DEF, averageGold) => { //I don't know a way to DRY this part.
+    let enemyData = new Enemy (Name, HP, ATK, DEF, averageGold)
+    enemies.push(enemyData)
+}
 
-const bearStats = [
-    ["HP", 75],
-    ["ATK", 25],
-    ["DEF", 20]
-]
+const enemy1 = enemyPush("Goblin", 25, 5, 5, 10)
+const enemy2 = enemyPush("Bear", 75, 25, 20, 30) //How does a bear carries gold?
+const enemy3 = enemyPush("Dragon", 750, 75, 100, 500)
 
-const dragonStats = [
-    ["HP", 750],
-    ["ATK", 75],
-    ["DEF", 100]
-]
+console.log(enemies)
 //General Data
 
-const itemStatDatabase =[
-    ["short sword", 10],
-    ["banana", 5],
-    ["gattling gun", 999]
-]
+const weapons =[]
+
+class Weapon {
+    static ID = 0
+    constructor (Name, ATK, DEF, Price){
+        this.ID = ++Weapon.ID
+        this.Name = Name
+        this.ATK = ATK
+        this.DEF = DEF
+        this.Price = Price
+    }
+}
+
+const weaponPush = (Name, ATK, DEF, Price) => { //I don't know a way to DRY this part.
+    let weaponData = new Weapon (Name, ATK, DEF, Price)
+    weapons.push(weaponData)
+}
+
+const weapon1 = weaponPush("Short Sword", 10, 5, 15)
+const weapon2 = weaponPush("Banana", 5, 0, 2)
+const weapon3 = weaponPush("Gattling Gun", 999, 25, 1500)
+
+console.log(weapons)
+
+let loop = false //Change to true to activate the Switch
+
 // Functions
-const nameEdit = (name) => {
+const nameEdit = (name) => { //Edit!
     if (name != "" && name != null){
         playerStatus.splice(3,1,["Name",name])
         alert("Your name will be" + " " + playerStatus[3][1])
@@ -57,19 +82,19 @@ const nameEdit = (name) => {
     }
 }
 
-function statCheck () { //Working
+function statCheck () { //Edit!
     console.log("Here are your Stats:\n")
     for (let playerStat of playerStatus){
         console.log(playerStat.join(" - "))
     }
 }
 
-function inventoryCheck (){ //Working
+function inventoryCheck (){ //Edit!
     console.log("Here is your Inventory:\n")
     console.log(inventory.join(" - "))
 }
 
-const equipAtk = (item) => { //Working
+const equipAtk = (item) => { //Edit!
     for (let [name,stat] of itemStatDatabase){
         let validate = name.includes(item)
 
@@ -81,7 +106,7 @@ const equipAtk = (item) => { //Working
     }
 }
 
-function equip (item){ //Working
+function equip (item){ //Edit!
     let exist = inventory.indexOf(item)
 
     if (exist != -1){
@@ -95,7 +120,7 @@ function equip (item){ //Working
     }
 }
 
-const critAtk = () => { //Working
+const critAtk = () => { //Edit!
     atkCounter ++
 
     if (atkCounter == 2){
@@ -116,7 +141,7 @@ const critAtk = () => { //Working
     }
 }
 
-const critDef = () => { //Working
+const critDef = () => { //Edit!
     defCounter ++
 
     if (defCounter == 2){
@@ -136,7 +161,7 @@ const critDef = () => { //Working
     }
 }
 
-const chooseEnemy = () => { //Working
+const chooseEnemy = () => { //Edit!
     if (enemyDefeated) {
         enemies.shift()
         let enemy = enemies[0]
@@ -149,7 +174,7 @@ const chooseEnemy = () => { //Working
     }
 }
 
-const assignEnemy = (enemy) =>{ //Working
+const assignEnemy = (enemy) =>{ //Edit!
     switch(enemy){
         case "Goblin":
             instanceEnemy = goblinStats
@@ -166,7 +191,7 @@ const assignEnemy = (enemy) =>{ //Working
     return instanceEnemy
 }
 
-const notNegative = (value) => { //Working
+const notNegative = (value) => { //Edit!
     if (value < 0){
         let newValue = value - (value * 2)
         return newValue
@@ -176,7 +201,7 @@ const notNegative = (value) => { //Working
     }
 }
 
-const attackCalc = (enemy) =>{ //Working
+const attackCalc = (enemy) =>{ //Edit!
     console.log(`You attack the ${enemy}!!`)
     let extraAtk = critAtk()
     let atkDifference = extraAtk - instanceEnemy[2][1]
@@ -187,7 +212,7 @@ const attackCalc = (enemy) =>{ //Working
     instanceEnemy.splice(0,1,["HP", hpRemain])
 }
 
-const defenseCalc = (enemy) =>{ //Working
+const defenseCalc = (enemy) =>{ //Edit!
     console.log(`The ${enemy} attacks you!!`)
     let extraDef = critDef()
     let defDifference = extraDef - instanceEnemy[1][1]
@@ -198,7 +223,7 @@ const defenseCalc = (enemy) =>{ //Working
     playerStatus.splice(0,1,["HP", hpRemain])
 }
 
-const winBattle = (enemy) => { //Working
+const winBattle = (enemy) => { //Edit!
     if (instanceEnemy[0][1] <= 0){
         console.log(`Wow, you defeated the ${enemy}!`)
         reward(enemy)
@@ -212,28 +237,28 @@ const winBattle = (enemy) => { //Working
     }
 }
 
-const badEnd = () => { //Working
+const badEnd = () => { //Edit!
     if (playerStatus[0][1] <= 0 ){
         console.log("You died :(\nGame over, please reload the page to start again!")
         loop = false
     }
 }
 
-const goodEnd = (enemy) =>{ //I don't know how to make it better so this will have to do for now.
-    if (enemy == undefined){
+const goodEnd = (enemy) =>{ //Edit!
+    if (!enemy){
         console.log("Wow, you made it, you killed everybody!\n You also got some gold, but I forgot to add it to your inventory, so just pretend :)\nNow the game is over, you got the good ending!")
         loop = false
     }
 }
 
-const reward = (enemy) => { //Working
+const reward = (enemy) => { //Edit!
     if (enemy == "Bear" && instanceEnemy[0][1] <= 0){
         console.log("The bear dropped a 'gattling gun'.")
         inventory.push("gattling gun")
     }
 }
 
-const mainBattle = (enemy) =>{ //Working
+const mainBattle = (enemy) =>{ //Edit!
     attackCalc(enemy)
     console.log(`Checking if the creature is still alive...`)
     winBattle(enemy)
@@ -247,7 +272,7 @@ const mainBattle = (enemy) =>{ //Working
     }
 }
 
-const loopBattle = () =>{ //Working
+const loopBattle = () =>{ //Edit!
     //El orden sería choose > assign > main battle > attackCalc > winBattle > defenseCalc > badEnd y loop
     console.log("You go further inside the cave.\nA shady figure is in front of you.\nYou illuminate with your torch and see a...")
     let actualEnemy = chooseEnemy()
@@ -267,8 +292,8 @@ const loopBattle = () =>{ //Working
 //loops and Calls
 
 //---------Start of the game---------
-nameEdit(prompt(":D that is you, someone looking for treasure and stuff, but...\nYou never said your name, what should I call you?"))
-console.log(`${playerStatus[3][1]}, you have entered the forbidden cave, where great treasures await for those who are brave enough.\n`)
+//nameEdit(prompt(":D that is you, someone looking for treasure and stuff, but...\nYou never said your name, what should I call you?"))
+//console.log(`${playerStatus[3][1]}, you have entered the forbidden cave, where great treasures await for those who are brave enough.\n`)
 
 //---------Main Menu---------
 while (loop) {
@@ -321,3 +346,6 @@ switch (prompt("What are you going to do?\n1 to check your inventory\n2 to check
 // let prueba = prompt("Que tipo de dato devuelve un prompt vacio?")
 // console.log(prueba)
 // console.log (typeof prueba)
+// let changeHP = playerStatus.HP - 10
+// playerStatus.HP = changeHP
+// console.log(playerStatus.HP)
