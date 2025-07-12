@@ -1,20 +1,21 @@
 //i - (i * 2) to change negative to positive
 // Player Data 
-const inventory = ["short sword", "banana"]
+const inventory = []
 
 const equippedItem = []
 
-const playerStatus = { //Array to Object Change
+const playerStatus = { //Change from Array to Object
     Name: "Hero",
     HP: 100,
     ATK: 20,
-    DEF: 10
+    DEF: 10,
+    Gold: 20
 }
 
 let atkCounter = 0
 let defCounter = 0
 
-// Enemy Data
+//Enemy Data
 let instanceEnemy = []
 
 let enemyDefeated = false
@@ -42,9 +43,8 @@ const enemy1 = enemyPush("Goblin", 25, 5, 5, 10)
 const enemy2 = enemyPush("Bear", 75, 25, 20, 30) //How does a bear carries gold?
 const enemy3 = enemyPush("Dragon", 750, 75, 100, 500)
 
-console.log(enemies)
 //General Data
-
+//Weapons ==>
 const weapons =[]
 
 class Weapon {
@@ -65,33 +65,65 @@ const weaponPush = (Name, ATK, DEF, Price) => { //I don't know a way to DRY this
 
 const weapon1 = weaponPush("Short Sword", 10, 5, 15)
 const weapon2 = weaponPush("Banana", 5, 0, 2)
-const weapon3 = weaponPush("Gattling Gun", 999, 25, 1500)
+const weapon3 = weaponPush("Golden Sword", 25, 15, 175)
+const weapon4 = weaponPush("Gattling Gun", 999, 25, 1500)
 
-console.log(weapons)
+//Items ==>
+const items = []
 
+class Item {
+    static ID = 0
+    constructor (Name, HP, Price){
+        this.ID = ++Item.ID
+        this.Name = Name
+        this.HP = HP
+        this.Price = Price
+    }
+}
+
+const itemPush = (Name, HP, Price) => { //I don't know a way to DRY this part.
+    let itemData = new Item (Name, HP, Price)
+    items.push(itemData)
+}
+
+const item1 = itemPush("Healing Potion", 20, 10)
+const item2 = itemPush("Egg", 5, 5)
+const item3 = itemPush("Scroll of Rejuvenation", 100, 200)
+
+//Extras ==>
 let loop = false //Change to true to activate the Switch
 
 // Functions
-const nameEdit = (name) => { //Edit!
+const nameEdit = (name) => { //Working
     if (name != "" && name != null){
-        playerStatus.splice(3,1,["Name",name])
-        alert("Your name will be" + " " + playerStatus[3][1])
+        playerStatus.Name = name
+        let notify = document.createElement("p")
+        notify.innerHTML = `<p> Your name will be "${playerStatus.Name}" from now on.</p>`
+        screen.appendChild(notify)
+        screen.removeChild(inputName)
     }
     else{
-        alert("Your name will be" + " " + playerStatus[3][1])
+        //alert("Your name will be" + " " + playerStatus.Name) //Change from alert to innerHtml
+        let notify = document.createElement("p")
+        notify.innerHTML = `<p> I'll guess I will call you "${playerStatus.Name}" since you didn´t chose a name.</p>`
+        screen.appendChild(notify)
+        screen.removeChild(inputName)
     }
+}
+
+function backpackCheck (){ //Working!
+    let notify = document.createElement("p")
+    notify.setAttribute("id", "backpack-open")
+    notify.innerHTML = `<p>Here are the current things in your Backpack:\n
+    ${inventory.join(" - ")}</p>`
+    screen.appendChild(notify)
 }
 
 function statCheck () { //Edit!
-    console.log("Here are your Stats:\n")
-    for (let playerStat of playerStatus){
-        console.log(playerStat.join(" - "))
+    console.log("Here are your Stats:\n") //Cambiar a Innerhtml
+    for (let playerStat of playerStatus){ //Cambiar a for each
+        console.log(playerStat.join(" - ")) //Cambiar a innerhtml
     }
-}
-
-function inventoryCheck (){ //Edit!
-    console.log("Here is your Inventory:\n")
-    console.log(inventory.join(" - "))
 }
 
 const equipAtk = (item) => { //Edit!
@@ -289,43 +321,99 @@ const loopBattle = () =>{ //Edit!
                 break
         }
 }
-//loops and Calls
 
 //---------Start of the game---------
-//nameEdit(prompt(":D that is you, someone looking for treasure and stuff, but...\nYou never said your name, what should I call you?"))
-//console.log(`${playerStatus[3][1]}, you have entered the forbidden cave, where great treasures await for those who are brave enough.\n`)
+inventory.push(weapons[0].Name, weapons[1].Name, items[1].Name) //At the beginning of the game this items are added.
+
+const screen = document.getElementById("screen")
+screen.innerText = ":D \nThat is you, someone looking for treasure and stuff, but...\nYou never said your name, what should I call you?\n"
+
+let inputName = document.createElement("form")
+inputName.setAttribute("id", "name-form")
+inputName.innerHTML = `<label for="name-field"> Enter your name here: </label>
+<input type="text" id="name-field" name="name-field">
+<input type="button" id="button-name" value="Done!"> `
+screen.appendChild(inputName) //First the parent, then the child
+
+let nameField = document.getElementById("name-field")
+let nameButton = document.getElementById("button-name")
+nameButton.onclick = () =>{
+    const nameEntered = nameField.value
+    nameEdit(nameEntered)
+    screen.innerText = `\n${playerStatus.Name}, you have entered the forbidden cave, where great treasures await for those who are brave enough.\n` //reference for interactions
+}
+
+
 
 //---------Main Menu---------
-while (loop) {
-switch (prompt("What are you going to do?\n1 to check your inventory\n2 to check your stats\n3 to advance through the cave\n4 to exit the game.")){
-    case "1":
-        inventoryCheck()
-        let decisionEq = prompt("Do you want to equip an item? yes or no").toLowerCase()
-        if (decisionEq == "yes"){
-            equip(prompt("Grab an item from your inventory and equip it to your hand!\n").toLowerCase())
-        }
-        else{
-            console.log("No? Ok! Returning to main menu.\n")
-        }
-        break
-    case "2":
-        statCheck()
-        break
-    case "3": 
-        loopBattle()
-        break
-    case "4":
-        console.log("Goodbye, see you soon :)")
-        loop = false
-        break
-    case "5":
-        console.log("Debug mode, it gives a gattling gun.")
-        inventory.push("gattling gun")
-        break
-    default:
-        console.log("Please choose an available option.")
+
+//=> Primero va Inventory
+const backpack = document.getElementById("backpack")
+backpack.onclick = () => {
+    //------This is just to clean the message from the previous query
+    let previousMessage = document.getElementById("tempMessage")
+    if (previousMessage){
+        previousMessage.remove()
+    }
+    //------Here is the real use of the event.
+    backpackCheck()
+    let tempMessage = document.createElement("p")
+    tempMessage.setAttribute("id", "tempMessage")
+    tempMessage.innerText = "Do you want to equip an item?"
+    screen.appendChild(tempMessage)
+
+    let tempButtonEquip = document.createElement("button")
+    tempButtonEquip.setAttribute("class", "temp")
+    tempButtonEquip.innerText = "Equip"
+    screen.appendChild(tempButtonEquip)
+    //equip() //Me quedé por acá, terminar de pensar como lo voy a continuar
+
+    let tempButtonReturn = document.createElement("button")
+    tempButtonReturn.setAttribute("class", "temp")
+    tempButtonReturn.innerText = "Return"
+    screen.appendChild(tempButtonReturn)
+    tempButtonReturn.onclick = () => {
+        tempMessage.innerText = "Ok! Returning to main menu.\n"
+        tempButtonEquip.remove()
+        tempButtonReturn.remove()
+        let previousBackpack = document.getElementById("backpack-open")
+        previousBackpack.remove()
+    }
+    
+    localStorage.setItem("Backpack", inventory)
+    //Una vez termina el ciclo, borrar id "backpack-open" y class "temp"
 }
-}
+
+// while (loop) {
+// switch (prompt("What are you going to do?\n1 to check your inventory\n2 to check your stats\n3 to advance through the cave\n4 to exit the game.")){
+//     case "1":
+//         backpackCheck()
+//         let decisionEq = prompt("Do you want to equip an item? yes or no").toLowerCase()
+//         if (decisionEq == "yes"){
+//             equip(prompt("Grab an item from your inventory and equip it to your hand!\n").toLowerCase())
+//         }
+//         else{
+//             console.log("No? Ok! Returning to main menu.\n")
+//         }
+//         break
+//     case "2":
+//         statCheck()
+//         break
+//     case "3": 
+//         loopBattle()
+//         break
+//     case "4":
+//         console.log("Goodbye, see you soon :)")
+//         loop = false
+//         break
+//     case "5":
+//         console.log("Debug mode, it gives a gattling gun.")
+//         inventory.push("gattling gun")
+//         break
+//     default:
+//         console.log("Please choose an available option.")
+// }
+// }
 
 //---------Testing---------
 
@@ -333,7 +421,7 @@ switch (prompt("What are you going to do?\n1 to check your inventory\n2 to check
 // equip(prompt("Grab an item from your inventory and equip it to your hand!\n").toLowerCase())
 // console.log(`This is your current equipped item: ${equippedItem}\n`)
 // statCheck()
-// inventoryCheck()
+// backpackCheck()
 //critAtk()
 //critDef()
 // attackCalc("Goblin")

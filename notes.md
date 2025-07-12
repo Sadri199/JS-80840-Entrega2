@@ -1,7 +1,7 @@
 ## Checklist entrega (por ahora lo subo, después lo escondo)
 
 [ ] - Evaluar Javascript, ver que se puede mejorar, que se saca.
-    [ ] - Cambio de arrays a Clases en los stats, items, enemigos, todo.
+    [x] - Cambio de arrays a Clases en los stats, items, enemigos, todo.
     [ ] - Que datos se guardan en local? Stats? Items?
     [ ] - Funciones de Orden Superior (Find, Filter)
     [ ] - Danger level (nuevo counter, para agregar enemigos a la lista de posibles encuentros, podría aumentar drop a medida que sube) Sería la dificultad.
@@ -17,7 +17,7 @@
     
 [ ] - Maquetear html, pensar como se va a ver la web.
     [ ] - Arranca con una pantalla dando la bienvenida, pide nombre con un input y submit. Guarda nombre en localStorage.
-    [ ] - Textarea, grande, donde todo lo que se pasa en console log se va a pasar ahí (excepto lo debug).
+    [x] - p, grande, donde todo lo que se pasa en console log se va a pasar ahí (excepto lo debug).
     [ ] - Inventory va a ser un botón, luego tengo que evaluar si pide texto o si agrega items con otros botones.
     [ ] - Fight va a ser un botón, podria ser dinámico en base a lo que esté pasando (encontras una tienda, un enemigo).
     [ ] - Cómo represento los diferentes eventos? La tienda habrá que escribir o presionar un botón?
@@ -32,7 +32,7 @@
     [ ] - Debug, tiene que estar display hidden con una clase, cuando se activa evento cambia a la clase con display inline?
     [ ] - Animaciones?? por ejemplo un cambio de backgroundColor tipo degrade cuando se ataca, cuando se recibe daño, cuando se cura
     
-[ ] - Tiene clases?
+[x] - Tiene clases?
 [ ] - Guarda algo en LocalStorage? Get de LocalStorage? Remove y Clear de LocalStorage?
 [ ] - Eventos funcionan correctamente?
 [ ] - 
