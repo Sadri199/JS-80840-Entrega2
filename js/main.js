@@ -4,7 +4,7 @@ const inventory = []
 
 const equippedItem = []
 
-const playerStatus = { //Change from Array to Object
+let playerStatus = { //Change from Array to Object
     Name: "Hero",
     HP: 100,
     ATK: 20,
@@ -21,6 +21,8 @@ let instanceEnemy = []
 let enemyDefeated = false
  
 const enemies = []
+
+let worldCounter = 1
 
 class Enemy {
     static ID = 0
@@ -99,58 +101,82 @@ const nameEdit = (name) => { //Working!
         playerStatus.Name = name
         let notify = document.createElement("p")
         notify.setAttribute("class", "notify")
-        notify.innerHTML = `<p> Your name will be "${playerStatus.Name}" from now on.</p>`
+        notify.innerHTML = `Your name will be "${playerStatus.Name}" from now on.`
         screen.appendChild(notify)
         screen.removeChild(inputName)
     }
     else{
-        //alert("Your name will be" + " " + playerStatus.Name) //Change from alert to innerHtml
         let notify = document.createElement("p")
-        notify.innerHTML = `<p> I'll guess I will call you "${playerStatus.Name}" since you didn´t chose a name.</p>`
+        notify.innerHTML = `I'll guess I will call you "${playerStatus.Name}" since you didn´t chose a name.`
         screen.appendChild(notify)
         screen.removeChild(inputName)
     }
 }
 
 function backpackCheck (){ //Working!
-    let notify = document.createElement("p")
-    notify.setAttribute("class", "notify")
-    notify.innerHTML = `<p>Here are the current things in your Backpack:\n</p>`
-    screen.appendChild(notify)
+    let backpack = document.createElement("div") //This renders your current Backpack
+    backpack.setAttribute("id", "backpack-open")
+    backpack.innerHTML = `\nHere are the current things in your Backpack:\n`
+    screen.appendChild(backpack)
 
-    inventory.forEach(weapon => { //Check why sometimes the first item div get deleted
-        let itemLoop = document.createElement("div")
-        itemLoop.setAttribute("id", "backpack-open")
-        itemLoop.innerHTML = `<span> ID: ${weapon.ID} </span>
-        <span> Name: ${weapon.Name} </span>
-        <span> Atk: ${weapon.ATK} </span>
-        <span> Def: ${weapon.DEF} </span>
-        <span> Price: ${weapon.Price} </span>`
-        screen.appendChild(itemLoop)
+    inventory.forEach(weapon => { //This renders each weapon in Inventory
+        let itemLoop = document.createElement("p")
+        itemLoop.setAttribute("class", "weapon")
+        itemLoop.innerHTML = `\nID: ${weapon.ID}\n Name: ${weapon.Name}\n 
+        Atk: ${weapon.ATK}\n Def: ${weapon.DEF}\n Price: ${weapon.Price}\n`
+        backpack.appendChild(itemLoop)
     })
+
+    if (equippedItem != 0){ //This is to render the currently equipped weapon //Edit order with CSS
+        let itemInHand = document.createElement("p")
+        itemInHand.setAttribute("class", "weapon__equip")
+        itemInHand.innerHTML = `\nHere is the thing you currently have equipped:\n
+        \nID: ${equippedItem[0].ID}\n Name: ${equippedItem[0].Name}\n 
+        Atk: ${equippedItem[0].ATK}\n Def: ${equippedItem[0].DEF}\n Price: ${equippedItem[0].Price}\n`
+        backpack.appendChild(itemInHand)
+        }
 }
 
-function statCheck () { //Edit!
-    console.log("Here are your Stats:\n") //Cambiar a Innerhtml
-    for (let playerStat of playerStatus){ //Cambiar a for each
-        console.log(playerStat.join(" - ")) //Cambiar a innerhtml
+function statCheck () { //Working!
+    let stats = document.createElement("div") //This renders your Stats
+    stats.setAttribute("id", "stats-show")
+    stats.innerHTML = `\nHere are your Stats:\n`
+    screen.appendChild(stats)
+
+    for(let stat in playerStatus) { //This renders each Stat of playerStatus
+        let statLoop = document.createElement("p")
+        statLoop.setAttribute("class", "stat")
+        statLoop.innerHTML = `\n ${stat} - ${playerStatus[stat]}\n`
+        stats.appendChild(statLoop)
     }
 }
 
-const equipAtt = (atk, def) => { //Edit! It needs to be a for each65
-    playerStatus.ATK + atk //me quede acá
-    playerStatus.DEF + def
+const equipAtt = (atk, def) => { //Working!
+    //---First the stats are reset to the base stats.
+    let baseAtk = playerStatus.ATK = 20
+    let baseDef = playerStatus.DEF = 10
+    playerStatus = {...playerStatus, ATK: baseAtk, DEF: baseDef}
+    //---Then the new stats are directly modified in the stats array.
+    let sumAtk = playerStatus.ATK + atk 
+    let sumDef = playerStatus.DEF + def
+    playerStatus = {...playerStatus, ATK: sumAtk, DEF: sumDef}
+
 }
 
-function equip (id){ //Edit!
+function equip (id){ //Working!
     let item = inventory.find(obj => obj.ID === id)
+    let onlyId = inventory.findIndex(obj => obj.ID === id)
 
-    if (typeof item !== "undefined"){
-            inventory.splice(id,1)
+    if (onlyId != -1){
+            if (equippedItem != 0){
+                inventory.push(equippedItem[0])
+            }
+            inventory.splice(onlyId,1)
             equippedItem.push(item)
+
             let notify = document.createElement("p")
             notify.setAttribute("class", "notify")
-            notify.innerHTML = `You removed ${item} from your Backpack! \nYou added ${item} to your hand!\n`
+            notify.innerHTML = `You removed ${item} from your Backpack! \nYou added ${equippedItem[0]} to your hand!\n`
             screen.appendChild(notify)
             equipAtt(item.ATK, item.DEF)
             screen.innerText = `\nDone equipping, returning to main menu.\n`
@@ -160,48 +186,59 @@ function equip (id){ //Edit!
     }
 }
 
-const critAtk = () => { //Edit!
-    atkCounter ++
+const critAtk = () => { //Working!
+    atkCounter = Math.floor(Math.random()*4)
+
+    let notify = document.createElement("p")
+        notify.setAttribute("class", "notify")
 
     if (atkCounter == 2){
-        let currentAtk = playerStatus[1][1] * 1.5
-        console.log("Your Attack rises! \n")
+        let currentAtk = playerStatus.ATK * 1.5
+        notify.innerHTML = `Your Attack rises! \n`
+        screen.appendChild(notify)
         return currentAtk
     }
-    else if (atkCounter == 3){
-        let currentAtk = playerStatus[1][1] * 2
-        console.log("Your Attack reaches its limits! \n")
-        atkCounter = 0
+    else if (atkCounter == 3){        
+        let currentAtk = playerStatus.ATK * 2
+        notify.innerHTML = `Your Attack reaches its limits! \n`
+        screen.appendChild(notify)
         return currentAtk
     }
     else{
-        let currentAtk = playerStatus[1][1]
-        console.log("Your Attack stays the same. \n")
+        let currentAtk = playerStatus.ATK 
+        notify.innerHTML = `Your Attack stays the same. \n`
+        screen.appendChild(notify)
         return currentAtk
     }
 }
 
-const critDef = () => { //Edit!
-    defCounter ++
+const critDef = () => { //Working!
+    defCounter = Math.floor(Math.random()*4)
+
+    let notify = document.createElement("p")
+        notify.setAttribute("class", "notify")
 
     if (defCounter == 2){
-        let currentDef = playerStatus[2][1] * 1.5
-        console.log("Your Defense rises! \n")
+        let currentDef = playerStatus.DEF * 1.5
+        notify.innerHTML = `Your Defense rises! \n`
+        screen.appendChild(notify)
         return currentDef
     }
     else if (defCounter == 3){
-        let currentDef = playerStatus[2][1] * 2
-        console.log("Your Defense reaches its limits! \n")
+        let currentDef = playerStatus.DEF * 2
+        notify.innerHTML = `Your Defense reaches its limits! \n`
+        screen.appendChild(notify)
         return currentDef
     }
     else{
-        let currentDef = playerStatus[2][1]
-        console.log("Your Defense stays the same. \n")
+        let currentDef = playerStatus.DEF 
+        notify.innerHTML = `Your Defense stays the same. \n`
+        screen.appendChild(notify)
         return currentDef
     }
 }
 
-const chooseEnemy = () => { //Edit!
+const chooseEnemy = () => { //Test, should work
     if (enemyDefeated) {
         enemies.shift()
         let enemy = enemies[0]
@@ -214,16 +251,38 @@ const chooseEnemy = () => { //Edit!
     }
 }
 
-const assignEnemy = (enemy) =>{ //Edit!
-    switch(enemy){
-        case "Goblin":
-            instanceEnemy = goblinStats
+const assignEnemy = (enemy) =>{ //Test, should work
+    let difficulty = Math.ceil(Math.random()*worldCounter)
+    let i = Math.ceil(Math.random()*10)
+
+    switch(difficulty){
+        case 1:
+            instanceEnemy = enemies[0] //Goblin
+            worldCounter ++
             break
-        case "Bear":
-            instanceEnemy = bearStats
+        case 2:
+            if (i < 5){
+                instanceEnemy = enemies[0]
+                worldCounter ++
+            }
+            else{
+                instanceEnemy = enemies[1] //Bear
+                worldCounter ++
+            }
             break
-        case "Dragon":
-            instanceEnemy = dragonStats
+        case 3:
+            if (i < 2){
+                instanceEnemy = enemies[0]
+                worldCounter ++
+            }
+            else if(i > 3 && i < 7){
+                instanceEnemy = enemies[1]
+                worldCounter ++
+            }
+            else{
+                instanceEnemy = enemies[2] //Dragon
+                worldCounter ++
+            }
             break
         default:
             goodEnd(enemy)
@@ -231,7 +290,7 @@ const assignEnemy = (enemy) =>{ //Edit!
     return instanceEnemy
 }
 
-const notNegative = (value) => { //Edit!
+const notNegative = (value) => { //Working!
     if (value < 0){
         let newValue = value - (value * 2)
         return newValue
@@ -241,26 +300,34 @@ const notNegative = (value) => { //Edit!
     }
 }
 
-const attackCalc = (enemy) =>{ //Edit!
-    console.log(`You attack the ${enemy}!!`)
-    let extraAtk = critAtk()
-    let atkDifference = extraAtk - instanceEnemy[2][1]
+const attackCalc = (enemy) =>{ //Test, should work
+    let extraAtk = critAtk() //First calculates
+    let atkDifference = extraAtk - instanceEnemy.DEF
     let realAtk = notNegative(atkDifference)
-    console.log(`The difference between your attack "${extraAtk}" and the enemy's defense "${instanceEnemy[2][1]}" is ${realAtk} !`)
-    let hpRemain = instanceEnemy[0][1] - realAtk
-    console.log(`The current HP of the ${enemy} is ${hpRemain} !`)
-    instanceEnemy.splice(0,1,["HP", hpRemain])
+    let hpRemain = instanceEnemy.HP - realAtk
+    instanceEnemy.HP = hpRemain
+    
+    let notify = document.createElement("p") //Then renders
+    notify.setAttribute("class", "notify")
+    notify.innerHTML = `You attack the ${enemy}!!\n
+    The difference between your attack "${extraAtk}" and the enemy's defense "${instanceEnemy.DEF}" is ${realAtk} !\n
+    The current HP of the ${enemy} is ${hpRemain} !\n`
+    screen.appendChild(notify)
 }
 
-const defenseCalc = (enemy) =>{ //Edit!
-    console.log(`The ${enemy} attacks you!!`)
-    let extraDef = critDef()
-    let defDifference = extraDef - instanceEnemy[1][1]
+const defenseCalc = (enemy) =>{ //Test, should work
+    let extraDef = critDef() //First calculates
+    let defDifference = extraDef - instanceEnemy.ATK
     let realDef = notNegative(defDifference)
-    console.log(`The difference between your defense "${extraDef}" and the enemy's attack "${instanceEnemy[1][1]}" is ${realDef} !`)
-    let hpRemain = playerStatus[0][1] - realDef
-    console.log(`Your current HP are ${hpRemain} !`)
-    playerStatus.splice(0,1,["HP", hpRemain])
+    let hpRemain = playerStatus.HP - realDef
+    playerStatus.HP = hpRemain
+    
+    let notify = document.createElement("p") //Then renders
+    notify.setAttribute("class", "notify")
+    notify.innerHTML = `The ${enemy} attacks you!!\n
+    The difference between your defense "${extraDef}" and the enemy's attack "${instanceEnemy.ATK}" is ${realDef} !\n
+    Your current HP are ${hpRemain} !\n`
+    screen.appendChild(notify)
 }
 
 const winBattle = (enemy) => { //Edit!
@@ -349,22 +416,22 @@ nameButton.onclick = () =>{
     const nameEntered = nameField.value
     nameEdit(nameEntered)
     screen.innerText = `\n${playerStatus.Name}, you have entered the forbidden cave, where great treasures await for those who are brave enough.\n` //reference for interactions
+    localStorage.setItem("UserName", playerStatus.Name)
 }
-
-
 
 //---------Main Menu---------
 
 //=> Primero va Inventory
 const backpack = document.getElementById("backpack")
 backpack.onclick = () => {
-    //------Here is the real use of the event.
+    //------Open Backpack, show what you have.
+    screen.innerText = ""
     backpackCheck()
     let tempMessage = document.createElement("p")
     tempMessage.setAttribute("class", "tempMessage")
     tempMessage.innerText = "Do you want to equip an item?"
     screen.appendChild(tempMessage)
-
+    //------First decision, equip
     let tempButtonEquip = document.createElement("button")
     tempButtonEquip.setAttribute("class", "temp")
     tempButtonEquip.innerText = "Equip"
@@ -381,31 +448,41 @@ backpack.onclick = () => {
         itemButton.onclick = () =>{
             const itemId = parseInt(itemField.value)
             equip(itemId)
-            console.log(playerStatus.ATK)
             }
-
         tempButtonEquip.remove()
         tempButtonReturn.remove()
-        let previousBackpack = document.getElementById("backpack-open")
-        previousBackpack.remove()
     }
-    //
-
+    //------Second decision, return
     let tempButtonReturn = document.createElement("button")
     tempButtonReturn.setAttribute("class", "temp")
     tempButtonReturn.innerText = "Return"
     screen.appendChild(tempButtonReturn)
     tempButtonReturn.onclick = () => {
-        tempMessage.innerText = "Ok! Returning to main menu.\n"
+        screen.innerText = "Ok! Returning to main menu.\n"
         tempButtonEquip.remove()
         tempButtonReturn.remove()
-        let previousBackpack = document.getElementById("backpack-open")
-        previousBackpack.remove()
     }
-    
+    //------Finally, save the current backpack.
     localStorage.setItem("Backpack", inventory)
-    //Una vez termina el ciclo, borrar id "backpack-open" y class "temp"
 }
+
+//=> Segundo va Stats (esperemos que sea más corto)
+const stats = document.getElementById("stats")
+stats.onclick = () => {
+    screen.innerText = ""
+    statCheck()
+}
+
+//=> Tercero las peleas y el botón Dynamic (ahora viene lo heavy)
+const action = document.getElementById("action")
+action.onclick = () => {
+    //milanesa
+}
+
+
+
+
+
 
 // while (loop) {
 // switch (prompt("What are you going to do?\n1 to check your inventory\n2 to check your stats\n3 to advance through the cave\n4 to exit the game.")){
@@ -461,7 +538,6 @@ backpack.onclick = () => {
 // playerStatus.HP = changeHP
 // console.log(playerStatus.HP)
 
-
-const testArray = [1, 2, 3]
-const testFind = testArray.find(pepino => pepino === 3)
-console.log(testFind)
+// const testArray = [1, 2, 3]
+// const testFind = testArray.find(pepino => pepino === 3)
+// console.log(testFind)
