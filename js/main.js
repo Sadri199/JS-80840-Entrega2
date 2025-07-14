@@ -68,36 +68,37 @@ const weapon2 = weaponPush("Banana", 5, 0, 2)
 const weapon3 = weaponPush("Golden Sword", 25, 15, 175)
 const weapon4 = weaponPush("Gattling Gun", 999, 25, 1500)
 
-//Items ==>
-const items = []
+// //Items ==>
+// const items = []
 
-class Item {
-    static ID = 0
-    constructor (Name, HP, Price){
-        this.ID = ++Item.ID
-        this.Name = Name
-        this.HP = HP
-        this.Price = Price
-    }
-}
+// class Item {
+//     static ID = 0
+//     constructor (Name, HP, Price){
+//         this.ID = ++Item.ID
+//         this.Name = Name
+//         this.HP = HP
+//         this.Price = Price
+//     }
+// }
 
-const itemPush = (Name, HP, Price) => { //I don't know a way to DRY this part.
-    let itemData = new Item (Name, HP, Price)
-    items.push(itemData)
-}
+// const itemPush = (Name, HP, Price) => { //I don't know a way to DRY this part.
+//     let itemData = new Item (Name, HP, Price)
+//     items.push(itemData)
+// }
 
-const item1 = itemPush("Healing Potion", 20, 10)
-const item2 = itemPush("Egg", 5, 5)
-const item3 = itemPush("Scroll of Rejuvenation", 100, 200)
+// const item1 = itemPush("Healing Potion", 20, 10)
+// const item2 = itemPush("Egg", 5, 5)
+// const item3 = itemPush("Scroll of Rejuvenation", 100, 200)
 
 //Extras ==>
 let loop = false //Change to true to activate the Switch
 
 // Functions
-const nameEdit = (name) => { //Working
+const nameEdit = (name) => { //Working!
     if (name != "" && name != null){
         playerStatus.Name = name
         let notify = document.createElement("p")
+        notify.setAttribute("class", "notify")
         notify.innerHTML = `<p> Your name will be "${playerStatus.Name}" from now on.</p>`
         screen.appendChild(notify)
         screen.removeChild(inputName)
@@ -113,10 +114,20 @@ const nameEdit = (name) => { //Working
 
 function backpackCheck (){ //Working!
     let notify = document.createElement("p")
-    notify.setAttribute("id", "backpack-open")
-    notify.innerHTML = `<p>Here are the current things in your Backpack:\n
-    ${inventory.join(" - ")}</p>`
+    notify.setAttribute("class", "notify")
+    notify.innerHTML = `<p>Here are the current things in your Backpack:\n</p>`
     screen.appendChild(notify)
+
+    inventory.forEach(weapon => { //Check why sometimes the first item div get deleted
+        let itemLoop = document.createElement("div")
+        itemLoop.setAttribute("id", "backpack-open")
+        itemLoop.innerHTML = `<span> ID: ${weapon.ID} </span>
+        <span> Name: ${weapon.Name} </span>
+        <span> Atk: ${weapon.ATK} </span>
+        <span> Def: ${weapon.DEF} </span>
+        <span> Price: ${weapon.Price} </span>`
+        screen.appendChild(itemLoop)
+    })
 }
 
 function statCheck () { //Edit!
@@ -126,29 +137,26 @@ function statCheck () { //Edit!
     }
 }
 
-const equipAtk = (item) => { //Edit!
-    for (let [name,stat] of itemStatDatabase){
-        let validate = name.includes(item)
-
-        if (validate){
-            playerStatus.splice(1,1,["ATK",20])
-            let sumAtk = playerStatus[1][1] + stat
-            playerStatus.splice(1,1,["ATK",sumAtk])
-        }
-    }
+const equipAtt = (atk, def) => { //Edit! It needs to be a for each65
+    playerStatus.ATK + atk //me quede acá
+    playerStatus.DEF + def
 }
 
-function equip (item){ //Edit!
-    let exist = inventory.indexOf(item)
+function equip (id){ //Edit!
+    let item = inventory.find(obj => obj.ID === id)
 
-    if (exist != -1){
-        inventory.splice(exist,1)
-        equippedItem.push(item)
-        alert(`You removed ${item} from inventory! \nYou added ${item} to your hand!\n`)
-        equipAtk(item)
+    if (typeof item !== "undefined"){
+            inventory.splice(id,1)
+            equippedItem.push(item)
+            let notify = document.createElement("p")
+            notify.setAttribute("class", "notify")
+            notify.innerHTML = `You removed ${item} from your Backpack! \nYou added ${item} to your hand!\n`
+            screen.appendChild(notify)
+            equipAtt(item.ATK, item.DEF)
+            screen.innerText = `\nDone equipping, returning to main menu.\n`
     }
     else{
-        console.log("You don't have that item in your inventory.\n")
+        screen.innerText = `You don't have that item in your inventory, returning to main menu.\n`
     }
 }
 
@@ -323,7 +331,7 @@ const loopBattle = () =>{ //Edit!
 }
 
 //---------Start of the game---------
-inventory.push(weapons[0].Name, weapons[1].Name, items[1].Name) //At the beginning of the game this items are added.
+inventory.push(weapons[0], weapons[1]) //At the beginning of the game this items are added.
 
 const screen = document.getElementById("screen")
 screen.innerText = ":D \nThat is you, someone looking for treasure and stuff, but...\nYou never said your name, what should I call you?\n"
@@ -350,15 +358,10 @@ nameButton.onclick = () =>{
 //=> Primero va Inventory
 const backpack = document.getElementById("backpack")
 backpack.onclick = () => {
-    //------This is just to clean the message from the previous query
-    let previousMessage = document.getElementById("tempMessage")
-    if (previousMessage){
-        previousMessage.remove()
-    }
     //------Here is the real use of the event.
     backpackCheck()
     let tempMessage = document.createElement("p")
-    tempMessage.setAttribute("id", "tempMessage")
+    tempMessage.setAttribute("class", "tempMessage")
     tempMessage.innerText = "Do you want to equip an item?"
     screen.appendChild(tempMessage)
 
@@ -366,7 +369,27 @@ backpack.onclick = () => {
     tempButtonEquip.setAttribute("class", "temp")
     tempButtonEquip.innerText = "Equip"
     screen.appendChild(tempButtonEquip)
-    //equip() //Me quedé por acá, terminar de pensar como lo voy a continuar
+    tempButtonEquip.onclick = () => {
+        let inputItem = document.createElement("form")
+        inputItem.setAttribute("id", "item-form")
+        inputItem.innerHTML = `<label for="item-field"> Please enter the ID of the corresponding Item: </label>
+        <input type="number" id="item-field" name="item-field">
+        <input type="button" id="button-item" value="Equip!"> `
+        screen.appendChild(inputItem)
+        let itemField = document.getElementById("item-field")
+        let itemButton = document.getElementById("button-item")
+        itemButton.onclick = () =>{
+            const itemId = parseInt(itemField.value)
+            equip(itemId)
+            console.log(playerStatus.ATK)
+            }
+
+        tempButtonEquip.remove()
+        tempButtonReturn.remove()
+        let previousBackpack = document.getElementById("backpack-open")
+        previousBackpack.remove()
+    }
+    //
 
     let tempButtonReturn = document.createElement("button")
     tempButtonReturn.setAttribute("class", "temp")
@@ -437,3 +460,8 @@ backpack.onclick = () => {
 // let changeHP = playerStatus.HP - 10
 // playerStatus.HP = changeHP
 // console.log(playerStatus.HP)
+
+
+const testArray = [1, 2, 3]
+const testFind = testArray.find(pepino => pepino === 3)
+console.log(testFind)
