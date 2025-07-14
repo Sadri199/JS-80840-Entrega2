@@ -19,25 +19,23 @@ let defCounter = 0
 let instanceEnemy = []
 
 let enemyDefeated = false
- 
-const enemies = []
 
-let worldCounter = 1
+const enemies = []
 
 class Enemy {
     static ID = 0
-    constructor (Name, HP, ATK, DEF, averageGold){
+    constructor (Name, HP, ATK, DEF, Gold){
         this.ID = ++Enemy.ID
         this.Name = Name
         this.HP = HP
         this.ATK = ATK
         this.DEF = DEF
-        this.averageGold = averageGold
+        this.Gold = Gold
     }
 }
 
-const enemyPush = (Name, HP, ATK, DEF, averageGold) => { //I don't know a way to DRY this part.
-    let enemyData = new Enemy (Name, HP, ATK, DEF, averageGold)
+const enemyPush = (Name, HP, ATK, DEF, Gold) => { //I don't know a way to DRY this part.
+    let enemyData = new Enemy (Name, HP, ATK, DEF, Gold)
     enemies.push(enemyData)
 }
 
@@ -193,7 +191,7 @@ const critAtk = () => { //Working!
         notify.setAttribute("class", "notify")
 
     if (atkCounter == 2){
-        let currentAtk = playerStatus.ATK * 1.5
+        let currentAtk = Math.ceil(playerStatus.ATK * 1.5)
         notify.innerHTML = `Your Attack rises! \n`
         screen.appendChild(notify)
         return currentAtk
@@ -219,7 +217,7 @@ const critDef = () => { //Working!
         notify.setAttribute("class", "notify")
 
     if (defCounter == 2){
-        let currentDef = playerStatus.DEF * 1.5
+        let currentDef = Math.ceil(playerStatus.DEF * 1.5)
         notify.innerHTML = `Your Defense rises! \n`
         screen.appendChild(notify)
         return currentDef
@@ -240,7 +238,7 @@ const critDef = () => { //Working!
 
 const chooseEnemy = () => { //Test, should work
     if (enemyDefeated) {
-        enemies.shift()
+        enemies.unshift()
         let enemy = enemies[0]
         enemyDefeated = false
         return enemy
@@ -252,37 +250,16 @@ const chooseEnemy = () => { //Test, should work
 }
 
 const assignEnemy = (enemy) =>{ //Test, should work
-    let difficulty = Math.ceil(Math.random()*worldCounter)
-    let i = Math.ceil(Math.random()*10)
-
-    switch(difficulty){
+    let enemyId = enemy.ID
+    switch(enemyId){
+        case 0:
+            instanceEnemy = enemy
+            break
         case 1:
-            instanceEnemy = enemies[0] //Goblin
-            worldCounter ++
+            instanceEnemy = enemy
             break
         case 2:
-            if (i < 5){
-                instanceEnemy = enemies[0]
-                worldCounter ++
-            }
-            else{
-                instanceEnemy = enemies[1] //Bear
-                worldCounter ++
-            }
-            break
-        case 3:
-            if (i < 2){
-                instanceEnemy = enemies[0]
-                worldCounter ++
-            }
-            else if(i > 3 && i < 7){
-                instanceEnemy = enemies[1]
-                worldCounter ++
-            }
-            else{
-                instanceEnemy = enemies[2] //Dragon
-                worldCounter ++
-            }
+            instanceEnemy = enemy
             break
         default:
             goodEnd(enemy)
@@ -309,9 +286,9 @@ const attackCalc = (enemy) =>{ //Test, should work
     
     let notify = document.createElement("p") //Then renders
     notify.setAttribute("class", "notify")
-    notify.innerHTML = `You attack the ${enemy}!!\n
+    notify.innerHTML = `You attack the ${enemy.Name}!!\n
     The difference between your attack "${extraAtk}" and the enemy's defense "${instanceEnemy.DEF}" is ${realAtk} !\n
-    The current HP of the ${enemy} is ${hpRemain} !\n`
+    The current HP of the ${enemy.Name} is ${hpRemain} !\n`
     screen.appendChild(notify)
 }
 
@@ -324,54 +301,100 @@ const defenseCalc = (enemy) =>{ //Test, should work
     
     let notify = document.createElement("p") //Then renders
     notify.setAttribute("class", "notify")
-    notify.innerHTML = `The ${enemy} attacks you!!\n
+    notify.innerHTML = `The ${enemy.Name} attacks you!!\n
     The difference between your defense "${extraDef}" and the enemy's attack "${instanceEnemy.ATK}" is ${realDef} !\n
     Your current HP are ${hpRemain} !\n`
     screen.appendChild(notify)
 }
 
-const winBattle = (enemy) => { //Edit!
-    if (instanceEnemy[0][1] <= 0){
-        console.log(`Wow, you defeated the ${enemy}!`)
+const winBattle = (enemy) => { //Test, should work
+    if (instanceEnemy.HP <= 0){
+        let notify = document.createElement("p")
+        notify.setAttribute("class", "notify")
+        notify.innerHTML = `Wow, you defeated the ${enemy.Name}!`
+        screen.appendChild(notify)
         reward(enemy)
         enemyDefeated = true
-        atkCounter = 0
-        defCounter = 0
         return enemyDefeated 
     }
     else {
-        console.log(`The ${enemy} can still fight!`)
+        let notify = document.createElement("p")
+        notify.setAttribute("class", "notify")
+        notify.innerHTML = `The ${enemy.Name} can still fight!`
+        screen.appendChild(notify)
     }
 }
 
-const badEnd = () => { //Edit!
-    if (playerStatus[0][1] <= 0 ){
-        console.log("You died :(\nGame over, please reload the page to start again!")
-        loop = false
+const badEnd = () => { //Test, should work
+    if (playerStatus.HP <= 0 ){
+        let notify = document.createElement("p")
+        notify.setAttribute("class", "notify")
+        notify.innerHTML = `You died :(\nGame over, please reload the page to start again!` //Redirect???
+        screen.appendChild(notify)
     }
 }
 
-const goodEnd = (enemy) =>{ //Edit!
-    if (!enemy){
-        console.log("Wow, you made it, you killed everybody!\n You also got some gold, but I forgot to add it to your inventory, so just pretend :)\nNow the game is over, you got the good ending!")
-        loop = false
+const goodEnd = (enemy) =>{ //Test, should work
+    if (typeof enemy === undefined){
+        let notify = document.createElement("p")
+        notify.setAttribute("class", "notify")
+        notify.innerHTML = `Wow, you made it, you killed everybody!\n You also got some gold, but I forgot to add it to your inventory, so just pretend :)\nNow the game is over, you got the good ending!` //Redirect???
+        screen.appendChild(notify)
     }
 }
 
-const reward = (enemy) => { //Edit!
-    if (enemy == "Bear" && instanceEnemy[0][1] <= 0){
-        console.log("The bear dropped a 'gattling gun'.")
-        inventory.push("gattling gun")
+const reward = (enemy) => { //Test, should work
+    let droppedItem = Math.ceil(Math.random()*100)
+    goldGained = instanceEnemy.Gold + Math.ceil(Math.random()*10)
+
+    if (instanceEnemy.HP <= 0){
+        let currentGold = playerStatus.Gold + goldGained
+        playerStatus.Gold = currentGold
+        
+        let notify = document.createElement("p")
+        notify.setAttribute("class", "notify")
+        notify.innerHTML = `The ${enemy.Name} dropped ${goldGained} Gold. Now you have ${playerStatus.Gold} Gold.`
+        screen.appendChild(notify)
+
+        if(droppedItem >= 60){
+            inventory.push(weapons[2]) //Golden Sword
+            
+            let notify = document.createElement("p")
+            notify.setAttribute("class", "notify")
+            notify.innerHTML = `The ${enemy.Name} dropped a ${weapons[2].Name}.`
+            screen.appendChild(notify)
+        }
+        else if (droppedItem >= 85){
+            inventory.push(weapons[3]) //Gattling Gun
+            
+            let notify = document.createElement("p")
+            notify.setAttribute("class", "notify")
+            notify.innerHTML = `The ${enemy.Name} dropped a ${weapons[3].Name}.`
+            screen.appendChild(notify)
+        }
+        else{
+            let notify = document.createElement("p")
+            notify.setAttribute("class", "notify")
+            notify.innerHTML = `The ${enemy.Name} didn't dropped any items :C`
+            screen.appendChild(notify)
+        }
     }
 }
 
-const mainBattle = (enemy) =>{ //Edit!
+const mainBattle = (enemy) =>{ //Test, should work
     attackCalc(enemy)
-    console.log(`Checking if the creature is still alive...`)
+    
+    let notify = document.createElement("p")
+    notify.setAttribute("class", "notify")
+    notify.innerHTML = `Checking if the creature is still alive...`
+    screen.appendChild(notify)
+
     winBattle(enemy)
     if (enemyDefeated){
-        console.log("After the creature's death you rest for a bit before continuing your mission")
-        playerStatus.splice(0,1,["HP", 100])
+        playerStatus.HP = 100
+        notify.innerHTML = `After the creature's death you rest for a bit before continuing your mission...\n
+        Your HP are now ${playerStatus.HP}`
+        screen.appendChild(notify)
     }
     else{
         defenseCalc(enemy)
@@ -379,22 +402,8 @@ const mainBattle = (enemy) =>{ //Edit!
     }
 }
 
-const loopBattle = () =>{ //Edit!
-    //El orden sería choose > assign > main battle > attackCalc > winBattle > defenseCalc > badEnd y loop
-    console.log("You go further inside the cave.\nA shady figure is in front of you.\nYou illuminate with your torch and see a...")
-    let actualEnemy = chooseEnemy()
-    console.log(`A ${actualEnemy} appeared!`)
-    assignEnemy(actualEnemy)
-    let decision = (prompt("What will you do, would you 'fight' or will you try to escape?").toLowerCase())
-        switch (decision){
-            case "fight":
-                console.log("Get ready to fight!\n")
-                mainBattle(actualEnemy)
-                break
-            default:
-                console.log("Going back to the main menu.")
-                break
-        }
+const loopBattle = () =>{ //Test, should work
+    
 }
 
 //---------Start of the game---------
@@ -475,8 +484,23 @@ stats.onclick = () => {
 
 //=> Tercero las peleas y el botón Dynamic (ahora viene lo heavy)
 const action = document.getElementById("action")
+action.innerText = "Advance!"
 action.onclick = () => {
-    //milanesa
+    //El orden sería choose > assign > main battle > attackCalc > winBattle > defenseCalc > badEnd y loop
+    let actualEnemy = chooseEnemy()
+    assignEnemy(actualEnemy)
+
+    let notifyEnemy = document.createElement("p")
+    notifyEnemy.setAttribute("class", "notifyEnemy")
+    notifyEnemy.innerHTML = `You go further inside the cave.\nA shady figure is in front of you.\nYou illuminate with your torch and see a...\n
+    A ${actualEnemy.Name} appeared!\n
+    If you are ready to fight, press "Fight!"`
+    screen.appendChild(notifyEnemy)
+    notifyEnemy.innerHTML = `Get ready to fight!\n`
+    mainBattle(actualEnemy)
+
+    action.innerText = "Fight!"
+    //Algo anda mal porque se queda trancado en el goblin con hp negativa
 }
 
 
