@@ -1,0 +1,88 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Press Start 2P", system-ui;
+  font-size: 1rem;
+  font-style: normal;
+  background-color: #e8f1f2;
+  color: #230903;
+  height: 100vh;
+}
+
+/* First IDs */
+
+#title{
+    font-size: 2rem;
+    text-align: center;
+}
+
+#main-game{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50%
+}
+
+#screen{
+    font-size: 1.5rem;
+    flex-grow: 1;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+#name-field{
+  font-family: "Press Start 2P", system-ui;
+    font-size: 1.5rem;
+}
+
+#backpack-open{
+    display: flex;
+    flex-direction: column;
+}
+
+#itemLoop{
+    order: 3;
+    padding: 10px 0;
+}
+
+#backpackMessage{
+    order: 2;
+    padding: 10px 0;
+}
+
+#itemInHand{
+    order: 1;
+    padding: 10px 0;
+}
+
+#stats-show{
+    display: flex;
+    justify-content: space-around;
+}
+
+#UI{
+    padding-top: 25px;
+    display: flex;
+    justify-content: space-around;
+}
+
+/* Second Classes */
+
+.stat{
+    text-decoration: underline;
+}
+
+.button{
+    border-radius: 15%;
+    color: #230903;
+    background-color: #d8e8eb;
+    margin-right: 5px;
+    padding: 5px;    
+    font-family: "Press Start 2P", system-ui;
+    font-size: 1.5rem;
+}

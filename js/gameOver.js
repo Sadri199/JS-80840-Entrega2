@@ -1,24 +1,33 @@
 //---------Data Here---------
 let userName = localStorage.getItem("playerName") //String
-let userBackpack = JSON.parse(localStorage.getItem("backpack")) //JSON
-let userEquipItem = JSON.parse(localStorage.getItem("weaponEquipped")) //JSON
+let userBackpack = JSON.parse(localStorage.getItem("backpack")) //JSON, iba a hacer algo pero no me da el tiempo
+let userEquipItem = JSON.parse(localStorage.getItem("weaponEquipped")) //JSON, iba a hacer algo pero no me da el tiempo
 let userScore = JSON.parse(localStorage.getItem("playerScore")) //JSON
 let userGameOver = JSON.parse(localStorage.getItem("playerGameOver")) //JSON
-let trueEnd = userGameOver.filter(elem => elem.keys() == true)
 
-const reasonGameOver = () => { //Me quede acá
-
-    console.log(trueEnd)
-    if (userGameOver.ExitEnding){
-        let flavorText = `You quitted the game by pressing the "Exit" button`
-        return flavorText
+ending = ""
+let arrayEndings = Object.entries(userGameOver)
+for(let [key,value] of arrayEndings){
+    if (value === true){
+        ending = key
     }
-    else if (userGameOver.GoodEnding){
-        let flavorText = `You beat the game by killing the Dragon. Nice!`
-        return flavorText
-    }
-    else{
+}
 
+const reasonGameOver = (ending) => { //Me quede acá
+    let flavorText = ""
+    switch (ending){
+        case "ExitEnding":
+            flavorText = `You quitted the game by pressing the "Exit" button!!`
+            return flavorText
+        case "GoodEnding":
+            flavorText = `You beat the game by killing the Dragon!\nNow the game is over, you got the good ending!`
+            return flavorText
+        case "BadEnding":
+            flavorText = `You lost all your HP and died :(\nGame over! This is the bad ending :(`
+            return flavorText
+        default:
+            flavorText = "How did you get here??????"
+            return flavorText
     }
 }
 
@@ -28,10 +37,9 @@ const reasonGameOver = () => { //Me quede acá
 const screen = document.getElementById("screen")
 
 screen.innerText = `Hello ${userName}, I hope you enjoyed the game!
-You arrived to this screen because you: ${reasonGameOver()}
-
-
-
+You arrived to this screen because you: ${reasonGameOver(ending)}\n
+You killed: Goblins => ${userScore.Goblin}\nBears=> ${userScore.Bear}\nDragon => ${userScore.Dragon}\n
+Press the button below to erase all your data.
 `
 
 //=> Borrada de localStorage
@@ -42,4 +50,14 @@ screen.appendChild(clearData)
 clearData.onclick = () => {
     screen.innerText = "Erasing all your data :("
     localStorage.clear()
+}
+
+//=> Return a Index
+const home = document.createElement("button")
+home.setAttribute("class", "button")
+home.innerText = "Go Back"
+screen.appendChild(home)
+home.onclick = () => {
+    screen.innerText = "Going back"
+    location.replace("../index.html")
 }

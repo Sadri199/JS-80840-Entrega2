@@ -109,12 +109,17 @@ const nameEdit = (name) => { //Working!
 function backpackCheck (){ //Working!
     let backpack = document.createElement("div") //This renders your current Backpack
     backpack.setAttribute("id", "backpack-open")
-    backpack.innerHTML = `\nHere are the current things in your Backpack:\n`
+    let backpackMessage = document.createElement("p")
+    backpackMessage.setAttribute("class", "tempMessage")
+    backpackMessage.setAttribute("id", "backpackMessage")
+    backpackMessage.innerHTML = `\nHere are the current things in your Backpack:\n`
     screen.appendChild(backpack)
+    backpack.appendChild(backpackMessage)
 
     inventory.forEach(weapon => { //This renders each weapon in Inventory
         let itemLoop = document.createElement("p")
         itemLoop.setAttribute("class", "weapon")
+        itemLoop.setAttribute("id", "itemLoop")
         itemLoop.innerHTML = `\nID: ${weapon.ID}\n Name: ${weapon.Name}\n 
         Atk: ${weapon.ATK}\n Def: ${weapon.DEF}\n Price: ${weapon.Price}\n`
         backpack.appendChild(itemLoop)
@@ -123,9 +128,9 @@ function backpackCheck (){ //Working!
     if (equippedItem != 0){ //This is to render the currently equipped weapon //Edit order with CSS
         let itemInHand = document.createElement("p")
         itemInHand.setAttribute("class", "weapon__equip")
-        itemInHand.innerHTML = `\nHere is the thing you currently have equipped:\n
-        \nID: ${equippedItem[0].ID}\n Name: ${equippedItem[0].Name}\n 
-        Atk: ${equippedItem[0].ATK}\n Def: ${equippedItem[0].DEF}\n Price: ${equippedItem[0].Price}\n`
+        itemInHand.setAttribute("id", "itemInHand")
+        itemInHand.innerHTML = `\nHere is the thing you currently have equipped:\nName: ${equippedItem[0].Name}\n 
+        Atk: ${equippedItem[0].ATK}\n Def: ${equippedItem[0].DEF}\n`
         backpack.appendChild(itemInHand)
         }
 }
@@ -388,7 +393,7 @@ const badEnd = () => { //Edit!
     if (playerStatus.HP <= 0 ){
         let notify = document.createElement("p")
         notify.setAttribute("class", "notify")
-        notify.innerHTML = `You died :(\nGame over, please reload the page to start again!` //Redirect???
+        notify.innerHTML = `You died :(\nGame over! Going to the next screen!` //Redirect???
         screen.appendChild(notify)
         gameOver.BadEnding = true
         localStorage.setItem("playerGameOver", JSON.stringify(gameOver))
@@ -400,7 +405,7 @@ const goodEnd = () =>{ //Edit!
     if (dragonMedal){
         let notify = document.createElement("p")
         notify.setAttribute("class", "notify")
-        notify.innerHTML = `Wow, you made it, you killed everybody!\n You also got some gold, but I forgot to add it to your inventory, so just pretend :)\nNow the game is over, you got the good ending!` //Redirect???
+        notify.innerHTML = `Wow, you made it, you killed everybody! Going to the next screen!` //Redirect???
         screen.appendChild(notify)
         gameOver.GoodEnding = true
         localStorage.setItem("playerGameOver", JSON.stringify(gameOver))
@@ -501,7 +506,7 @@ let inputName = document.createElement("form")
 inputName.setAttribute("id", "name-form")
 inputName.innerHTML = `<label for="name-field"> Enter your name here: </label>
 <input type="text" id="name-field" name="name-field">
-<input type="button" id="button-name" value="Done!"> `
+<input type="button" id="button-name" class="button" value="Done!"> `
 screen.appendChild(inputName) //First the parent, then the child
 
 let nameField = document.getElementById("name-field")
@@ -527,7 +532,7 @@ backpack.onclick = () => {
     screen.appendChild(tempMessage)
     //------First decision, equip
     let tempButtonEquip = document.createElement("button")
-    tempButtonEquip.setAttribute("class", "temp")
+    tempButtonEquip.setAttribute("class", "button")
     tempButtonEquip.innerText = "Equip"
     screen.appendChild(tempButtonEquip)
     tempButtonEquip.onclick = () => {
@@ -550,7 +555,7 @@ backpack.onclick = () => {
     }
     //------Second decision, return
     let tempButtonReturn = document.createElement("button")
-    tempButtonReturn.setAttribute("class", "temp")
+    tempButtonReturn.setAttribute("class", "button")
     tempButtonReturn.innerText = "Return"
     screen.appendChild(tempButtonReturn)
     tempButtonReturn.onclick = () => {
