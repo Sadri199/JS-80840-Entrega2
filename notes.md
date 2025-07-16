@@ -34,6 +34,6 @@
     
 [x] - Tiene clases?
 [x] - Guarda algo en LocalStorage? Get de LocalStorage? Remove y Clear de LocalStorage?
-[ ] - Eventos funcionan correctamente?
+[x] - Eventos funcionan correctamente?
 
     

@@ -4,6 +4,20 @@ const inventory = []
 
 const equippedItem = []
 
+const score = {
+    Goblin: 0,
+    Bear: 0,
+    Dragon: 0
+}
+
+const gameOver = {
+    GoodEnding: false,
+    BadEnding: false,
+    ExitEnding: false
+}
+
+let worldCounter = 0
+
 let playerStatus = { //Change from Array to Object
     Name: "Hero",
     HP: 100,
@@ -43,8 +57,13 @@ const enemy1 = enemyPush("Goblin", 25, 5, 5, 10)
 const enemy2 = enemyPush("Bear", 75, 25, 20, 30) //How does a bear carries gold?
 const enemy3 = enemyPush("Dragon", 750, 75, 100, 500)
 
+
+const enemiesStats = enemies.map(enemyStat => enemyStat)  
+
+let bearToken = false
+let dragonMedal = false
+
 //General Data
-//Weapons ==>
 const weapons =[]
 
 class Weapon {
@@ -68,30 +87,6 @@ const weapon2 = weaponPush("Banana", 5, 0, 2)
 const weapon3 = weaponPush("Golden Sword", 25, 15, 175)
 const weapon4 = weaponPush("Gattling Gun", 999, 25, 1500)
 
-// //Items ==>
-// const items = []
-
-// class Item {
-//     static ID = 0
-//     constructor (Name, HP, Price){
-//         this.ID = ++Item.ID
-//         this.Name = Name
-//         this.HP = HP
-//         this.Price = Price
-//     }
-// }
-
-// const itemPush = (Name, HP, Price) => { //I don't know a way to DRY this part.
-//     let itemData = new Item (Name, HP, Price)
-//     items.push(itemData)
-// }
-
-// const item1 = itemPush("Healing Potion", 20, 10)
-// const item2 = itemPush("Egg", 5, 5)
-// const item3 = itemPush("Scroll of Rejuvenation", 100, 200)
-
-//Extras ==>
-let loop = false //Change to true to activate the Switch
 
 // Functions
 const nameEdit = (name) => { //Working!
@@ -170,6 +165,7 @@ function equip (id){ //Working!
                 inventory.push(equippedItem[0])
             }
             inventory.splice(onlyId,1)
+            equippedItem.pop() //We take the previous object
             equippedItem.push(item)
 
             let notify = document.createElement("p")
@@ -236,33 +232,80 @@ const critDef = () => { //Working!
     }
 }
 
-const chooseEnemy = () => { //Test, should work
+const chooseEnemy = () => { //Working!
     if (enemyDefeated) {
-        enemies.unshift()
-        let enemy = enemies[0]
+        let randomNumber = Math.floor(Math.random()*10)
+        let enemy = enemyRandomizer(randomNumber)
         enemyDefeated = false
         return enemy
     }
     else{
-        let enemy = enemies[0]
+        let enemy = enemyRandomizer() //First fight is a Goblin, mandatory, like a tutorial
         return enemy
     }
 }
 
-const assignEnemy = (enemy) =>{ //Test, should work
+const enemyRandomizer = (randomNumber) =>{//Working!
+
+    switch (worldCounter){
+        case 0:
+            console.log("Entraste por el tutorial")
+            console.log(worldCounter)
+            let tutorial = enemiesStats[0]
+            return tutorial
+        case 1:
+            console.log("Entraste por worldcounter 1")
+            console.log(worldCounter)
+            if (randomNumber <= 5) {
+                let enemy = enemiesStats[0]
+                return enemy
+            }
+            else{
+                let enemy = enemiesStats[1] //Bear
+                return enemy
+            }
+        case 2:
+            console.log("Entraste por worldcounter 2")
+            console.log(worldCounter)
+            if (randomNumber <= 2){
+                let enemy = enemiesStats[0]
+                return enemy
+            }
+            else if (randomNumber >= 3){
+                let enemy = enemiesStats[1]
+                return enemy
+            }
+        case 3:
+            console.log("Entraste por worldcounter 3")
+            console.log(worldCounter)
+            if (randomNumber < 4){
+                let enemy = enemiesStats[1]
+                return enemy
+            }
+            else{
+                let enemy = enemiesStats[2]
+                return enemy
+            }
+        default:
+            let enemy = enemiesStats[2]
+            return enemy
+        }
+}
+
+const assignEnemy = (enemy) =>{ //Working! not happy with this one...
     let enemyId = enemy.ID
     switch(enemyId){
         case 0:
-            instanceEnemy = enemy
+            instanceEnemy = enemy //Golbin
             break
         case 1:
-            instanceEnemy = enemy
+            instanceEnemy = enemy //Bear
             break
         case 2:
-            instanceEnemy = enemy
+            instanceEnemy = enemy //Dragon
             break
-        default:
-            goodEnd(enemy)
+        default: //If enemy undefined comes here
+            goodEnd()
     }
     return instanceEnemy
 }
@@ -277,24 +320,24 @@ const notNegative = (value) => { //Working!
     }
 }
 
-const attackCalc = (enemy) =>{ //Test, should work
+const attackCalc = (enemy) =>{ //Working!
     let extraAtk = critAtk() //First calculates
-    let atkDifference = extraAtk - instanceEnemy.DEF
+    let atkDifference = extraAtk - enemy.DEF
     let realAtk = notNegative(atkDifference)
-    let hpRemain = instanceEnemy.HP - realAtk
-    instanceEnemy.HP = hpRemain
+    let hpRemain = enemy.HP - realAtk
+    enemy.HP = hpRemain
     
     let notify = document.createElement("p") //Then renders
     notify.setAttribute("class", "notify")
     notify.innerHTML = `You attack the ${enemy.Name}!!\n
-    The difference between your attack "${extraAtk}" and the enemy's defense "${instanceEnemy.DEF}" is ${realAtk} !\n
+    The difference between your attack "${extraAtk}" and the enemy's defense "${enemy.DEF}" is ${realAtk} !\n
     The current HP of the ${enemy.Name} is ${hpRemain} !\n`
     screen.appendChild(notify)
 }
 
-const defenseCalc = (enemy) =>{ //Test, should work
+const defenseCalc = (enemy) =>{ //Working!
     let extraDef = critDef() //First calculates
-    let defDifference = extraDef - instanceEnemy.ATK
+    let defDifference = extraDef - enemy.ATK
     let realDef = notNegative(defDifference)
     let hpRemain = playerStatus.HP - realDef
     playerStatus.HP = hpRemain
@@ -302,19 +345,35 @@ const defenseCalc = (enemy) =>{ //Test, should work
     let notify = document.createElement("p") //Then renders
     notify.setAttribute("class", "notify")
     notify.innerHTML = `The ${enemy.Name} attacks you!!\n
-    The difference between your defense "${extraDef}" and the enemy's attack "${instanceEnemy.ATK}" is ${realDef} !\n
+    The difference between your defense "${extraDef}" and the enemy's attack "${enemy.ATK}" is ${realDef} !\n
     Your current HP are ${hpRemain} !\n`
     screen.appendChild(notify)
 }
 
-const winBattle = (enemy) => { //Test, should work
-    if (instanceEnemy.HP <= 0){
+const winBattle = (enemy) => { //Working!
+    if (enemy.HP <= 0){
+        worldCounter ++
+        enemyDefeated = true
+
         let notify = document.createElement("p")
         notify.setAttribute("class", "notify")
         notify.innerHTML = `Wow, you defeated the ${enemy.Name}!`
         screen.appendChild(notify)
+        
+        if(enemy.Name == "Bear" || instanceEnemy.Name == "Bear"){
+            bearToken = true
+            score.Bear ++
+        }
+        else if (enemy.Name == "Dragon" || instanceEnemy.Name == "Dragon"){
+            dragonMedal = true
+            score.Dragon ++
+        }
+        else{
+            score.Goblin ++
+        }
+        
         reward(enemy)
-        enemyDefeated = true
+        localStorage.setItem("playerScore", JSON.stringify(score))
         return enemyDefeated 
     }
     else {
@@ -325,25 +384,31 @@ const winBattle = (enemy) => { //Test, should work
     }
 }
 
-const badEnd = () => { //Test, should work
+const badEnd = () => { //Edit!
     if (playerStatus.HP <= 0 ){
         let notify = document.createElement("p")
         notify.setAttribute("class", "notify")
         notify.innerHTML = `You died :(\nGame over, please reload the page to start again!` //Redirect???
         screen.appendChild(notify)
+        gameOver.BadEnding = true
+        localStorage.setItem("playerGameOver", JSON.stringify(gameOver))
+        location.replace("./pages/gameOver.html")
     }
 }
 
-const goodEnd = (enemy) =>{ //Test, should work
-    if (typeof enemy === undefined){
+const goodEnd = () =>{ //Edit!
+    if (dragonMedal){
         let notify = document.createElement("p")
         notify.setAttribute("class", "notify")
         notify.innerHTML = `Wow, you made it, you killed everybody!\n You also got some gold, but I forgot to add it to your inventory, so just pretend :)\nNow the game is over, you got the good ending!` //Redirect???
         screen.appendChild(notify)
+        gameOver.GoodEnding = true
+        localStorage.setItem("playerGameOver", JSON.stringify(gameOver))
+        location.replace("./pages/gameOver.html")
     }
 }
 
-const reward = (enemy) => { //Test, should work
+const reward = (enemy) => { //Working!
     let droppedItem = Math.ceil(Math.random()*100)
     goldGained = instanceEnemy.Gold + Math.ceil(Math.random()*10)
 
@@ -356,7 +421,7 @@ const reward = (enemy) => { //Test, should work
         notify.innerHTML = `The ${enemy.Name} dropped ${goldGained} Gold. Now you have ${playerStatus.Gold} Gold.`
         screen.appendChild(notify)
 
-        if(droppedItem >= 60){
+        if(droppedItem >= 60 && !bearToken){
             inventory.push(weapons[2]) //Golden Sword
             
             let notify = document.createElement("p")
@@ -364,7 +429,7 @@ const reward = (enemy) => { //Test, should work
             notify.innerHTML = `The ${enemy.Name} dropped a ${weapons[2].Name}.`
             screen.appendChild(notify)
         }
-        else if (droppedItem >= 85){
+        else if (bearToken){
             inventory.push(weapons[3]) //Gattling Gun
             
             let notify = document.createElement("p")
@@ -381,7 +446,7 @@ const reward = (enemy) => { //Test, should work
     }
 }
 
-const mainBattle = (enemy) =>{ //Test, should work
+const mainBattle = (enemy) =>{ //Working!
     attackCalc(enemy)
     
     let notify = document.createElement("p")
@@ -390,8 +455,11 @@ const mainBattle = (enemy) =>{ //Test, should work
     screen.appendChild(notify)
 
     winBattle(enemy)
-    if (enemyDefeated){
+    if (enemyDefeated){ //Sorry but i couldn't find how to restart the HP values of each creature
         playerStatus.HP = 100
+        enemies[0].HP = 25 
+        enemies[1].HP = 75
+        enemies[2].HP = 750
         notify.innerHTML = `After the creature's death you rest for a bit before continuing your mission...\n
         Your HP are now ${playerStatus.HP}`
         screen.appendChild(notify)
@@ -402,12 +470,29 @@ const mainBattle = (enemy) =>{ //Test, should work
     }
 }
 
-const loopBattle = () =>{ //Test, should work
-    
+const loopBattle = (actualEnemy) =>{ //Working!
+    //El orden sería choose > assign > main battle > attackCalc > winBattle > defenseCalc > badEnd y loop
+    screen.innerText = ""
+    action.innerText = "Fight!"
+    let notifyEnemy = document.createElement("p")
+    notifyEnemy.setAttribute("class", "notifyEnemy")
+
+    notifyEnemy.innerHTML = `You go further inside the cave.\nA shady figure is in front of you.\nYou illuminate with your torch and see a...\n
+    A ${actualEnemy.Name} appeared!\n
+    If you are ready to fight, press "Fight!"`
+    screen.appendChild(notifyEnemy)
+    notifyEnemy.innerHTML = `Get ready to fight against ${actualEnemy.Name}! Their current HP is ${actualEnemy.HP}!`
+    mainBattle(actualEnemy)
+    //Algo anda mal porque se queda trancado en el goblin con hp negativa
 }
 
 //---------Start of the game---------
 inventory.push(weapons[0], weapons[1]) //At the beginning of the game this items are added.
+localStorage.setItem("backpack", JSON.stringify(inventory))
+
+localStorage.setItem("playerScore", JSON.stringify(score))
+
+const saveEquip = localStorage.setItem("weaponEquipped",JSON.stringify(equippedItem))
 
 const screen = document.getElementById("screen")
 screen.innerText = ":D \nThat is you, someone looking for treasure and stuff, but...\nYou never said your name, what should I call you?\n"
@@ -425,7 +510,7 @@ nameButton.onclick = () =>{
     const nameEntered = nameField.value
     nameEdit(nameEntered)
     screen.innerText = `\n${playerStatus.Name}, you have entered the forbidden cave, where great treasures await for those who are brave enough.\n` //reference for interactions
-    localStorage.setItem("UserName", playerStatus.Name)
+    localStorage.setItem("playerName", playerStatus.Name)
 }
 
 //---------Main Menu---------
@@ -457,6 +542,8 @@ backpack.onclick = () => {
         itemButton.onclick = () =>{
             const itemId = parseInt(itemField.value)
             equip(itemId)
+            localStorage.setItem("backpack", JSON.stringify(inventory))
+            localStorage.setItem("weaponEquipped",JSON.stringify(equippedItem))
             }
         tempButtonEquip.remove()
         tempButtonReturn.remove()
@@ -470,9 +557,12 @@ backpack.onclick = () => {
         screen.innerText = "Ok! Returning to main menu.\n"
         tempButtonEquip.remove()
         tempButtonReturn.remove()
+        localStorage.setItem("backpack", JSON.stringify(inventory))
+        localStorage.setItem("weaponEquipped",JSON.stringify(equippedItem)) 
     }
     //------Finally, save the current backpack.
-    localStorage.setItem("Backpack", inventory)
+    localStorage.setItem("backpack", JSON.stringify(inventory))
+    localStorage.setItem("weaponEquipped",JSON.stringify(equippedItem))
 }
 
 //=> Segundo va Stats (esperemos que sea más corto)
@@ -486,82 +576,30 @@ stats.onclick = () => {
 const action = document.getElementById("action")
 action.innerText = "Advance!"
 action.onclick = () => {
-    //El orden sería choose > assign > main battle > attackCalc > winBattle > defenseCalc > badEnd y loop
     let actualEnemy = chooseEnemy()
     assignEnemy(actualEnemy)
-
-    let notifyEnemy = document.createElement("p")
-    notifyEnemy.setAttribute("class", "notifyEnemy")
-    notifyEnemy.innerHTML = `You go further inside the cave.\nA shady figure is in front of you.\nYou illuminate with your torch and see a...\n
-    A ${actualEnemy.Name} appeared!\n
-    If you are ready to fight, press "Fight!"`
-    screen.appendChild(notifyEnemy)
-    notifyEnemy.innerHTML = `Get ready to fight!\n`
-    mainBattle(actualEnemy)
-
-    action.innerText = "Fight!"
-    //Algo anda mal porque se queda trancado en el goblin con hp negativa
+    loopBattle(actualEnemy)
 }
 
+//=> Cuarto es Exit, que por ahora da Game Over (no me da tiempo a implementar una forma de guardar partidas)
+const exit = document.getElementById("exit")
+exit.onclick = () => {
+    screen.innerText = "Are you sure you want to quit? You will be redirected to the Game Over screen directly!"
+    let tempButtonYes = document.createElement("button")
+    tempButtonYes.setAttribute("class", "tempYes")
+    tempButtonYes.innerText = "Yes"
+    screen.appendChild(tempButtonYes)
+    let tempButtonNo = document.createElement("button")
+    tempButtonNo.setAttribute("class", "tempNo")
+    tempButtonNo.innerText = "No"
+    screen.appendChild(tempButtonNo)
 
-
-
-
-
-// while (loop) {
-// switch (prompt("What are you going to do?\n1 to check your inventory\n2 to check your stats\n3 to advance through the cave\n4 to exit the game.")){
-//     case "1":
-//         backpackCheck()
-//         let decisionEq = prompt("Do you want to equip an item? yes or no").toLowerCase()
-//         if (decisionEq == "yes"){
-//             equip(prompt("Grab an item from your inventory and equip it to your hand!\n").toLowerCase())
-//         }
-//         else{
-//             console.log("No? Ok! Returning to main menu.\n")
-//         }
-//         break
-//     case "2":
-//         statCheck()
-//         break
-//     case "3": 
-//         loopBattle()
-//         break
-//     case "4":
-//         console.log("Goodbye, see you soon :)")
-//         loop = false
-//         break
-//     case "5":
-//         console.log("Debug mode, it gives a gattling gun.")
-//         inventory.push("gattling gun")
-//         break
-//     default:
-//         console.log("Please choose an available option.")
-// }
-// }
-
-//---------Testing---------
-
-//nameEdit(prompt('Please type your name or press "Ok" to continue with the default value: \n'))
-// equip(prompt("Grab an item from your inventory and equip it to your hand!\n").toLowerCase())
-// console.log(`This is your current equipped item: ${equippedItem}\n`)
-// statCheck()
-// backpackCheck()
-//critAtk()
-//critDef()
-// attackCalc("Goblin")
-// assignEnemy("Goblin")
-// defenseCalc("Goblin")
-//badEnd()
-// let prueba = playerStatus[1][1] + itemStatDatabase[0][1]
-// playerStatus.splice(1,1,["ATK",prueba])
-// console.log(playerStatus)
-// let prueba = prompt("Que tipo de dato devuelve un prompt vacio?")
-// console.log(prueba)
-// console.log (typeof prueba)
-// let changeHP = playerStatus.HP - 10
-// playerStatus.HP = changeHP
-// console.log(playerStatus.HP)
-
-// const testArray = [1, 2, 3]
-// const testFind = testArray.find(pepino => pepino === 3)
-// console.log(testFind)
+    tempButtonYes.onclick = () => {
+        gameOver.ExitEnding = true
+        localStorage.setItem("playerGameOver", JSON.stringify(gameOver))
+        location.replace("./pages/gameOver.html")
+    }
+    tempButtonNo.onclick = () => {
+        screen.innerText = "Ok! Returning to main menu.\n"
+    }
+}
