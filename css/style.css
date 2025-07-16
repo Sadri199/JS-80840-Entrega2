@@ -1,16 +1,19 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  font-family: "Press Start 2P", system-ui;
-  font-size: 1rem;
-  font-style: normal;
-  background-color: #e8f1f2;
-  color: #230903;
-  height: 100vh;
+    font-family: "Press Start 2P", system-ui;
+    font-size: 1rem;
+    font-style: normal;
+    background-color: #F8FBFC;
+    color: #5941a9;
+}
+
+label{
+    padding: 20px 0;
 }
 
 /* First IDs */
@@ -18,6 +21,7 @@ body {
 #title{
     font-size: 2rem;
     text-align: center;
+    padding-bottom: 10px;
 }
 
 #main-game{
@@ -28,16 +32,19 @@ body {
 }
 
 #screen{
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     flex-grow: 1;
     text-align: center;
     padding-top: 20px;
     padding-bottom: 20px;
+    overflow: scroll;
+    height: 450px
 }
 
-#name-field{
-  font-family: "Press Start 2P", system-ui;
+#name-field, #item-field{
+    font-family: "Press Start 2P",system-ui;
     font-size: 1.5rem;
+    background-color: #bec4c5;
 }
 
 #backpack-open{
@@ -73,8 +80,20 @@ body {
 
 /* Second Classes */
 
-.stat{
+.tempMessage{
+    margin-bottom: 10px;
+}
+
+.stat, .weapon{
     text-decoration: underline;
+}
+
+.notifyEnemy{
+    padding-bottom: 5px;
+}
+
+.notify{
+    padding: 10px 0;
 }
 
 .button{
@@ -85,4 +104,8 @@ body {
     padding: 5px;    
     font-family: "Press Start 2P", system-ui;
     font-size: 1.5rem;
+}
+
+.hidden{
+    display: none;
 }

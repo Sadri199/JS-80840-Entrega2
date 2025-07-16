@@ -31,16 +31,16 @@ const reasonGameOver = (ending) => { //Me quede acá
     }
 }
 
-
-
 //---------Render Here---------
 const screen = document.getElementById("screen")
 
 screen.innerText = `Hello ${userName}, I hope you enjoyed the game!
 You arrived to this screen because you: ${reasonGameOver(ending)}\n
 You killed: Goblins => ${userScore.Goblin}\nBears=> ${userScore.Bear}\nDragon => ${userScore.Dragon}\n
-Press the button below to erase all your data.
-`
+Press the button below to erase all your data.`
+const home = document.createElement("button")
+home.setAttribute("class", "button")
+home.innerText = "Go Back"
 
 //=> Borrada de localStorage
 const clearData = document.createElement("button")
@@ -50,12 +50,14 @@ screen.appendChild(clearData)
 clearData.onclick = () => {
     screen.innerText = "Erasing all your data :("
     localStorage.clear()
+    screen.appendChild(home)
+    home.onclick = () => {
+        location.replace("../index.html")
+}
+
 }
 
 //=> Return a Index
-const home = document.createElement("button")
-home.setAttribute("class", "button")
-home.innerText = "Go Back"
 screen.appendChild(home)
 home.onclick = () => {
     screen.innerText = "Going back"

@@ -254,13 +254,9 @@ const enemyRandomizer = (randomNumber) =>{//Working!
 
     switch (worldCounter){
         case 0:
-            console.log("Entraste por el tutorial")
-            console.log(worldCounter)
             let tutorial = enemiesStats[0]
             return tutorial
         case 1:
-            console.log("Entraste por worldcounter 1")
-            console.log(worldCounter)
             if (randomNumber <= 5) {
                 let enemy = enemiesStats[0]
                 return enemy
@@ -270,8 +266,6 @@ const enemyRandomizer = (randomNumber) =>{//Working!
                 return enemy
             }
         case 2:
-            console.log("Entraste por worldcounter 2")
-            console.log(worldCounter)
             if (randomNumber <= 2){
                 let enemy = enemiesStats[0]
                 return enemy
@@ -281,9 +275,7 @@ const enemyRandomizer = (randomNumber) =>{//Working!
                 return enemy
             }
         case 3:
-            console.log("Entraste por worldcounter 3")
-            console.log(worldCounter)
-            if (randomNumber < 4){
+            if (randomNumber < 6){
                 let enemy = enemiesStats[1]
                 return enemy
             }
@@ -365,16 +357,17 @@ const winBattle = (enemy) => { //Working!
         notify.innerHTML = `Wow, you defeated the ${enemy.Name}!`
         screen.appendChild(notify)
         
-        if(enemy.Name == "Bear" || instanceEnemy.Name == "Bear"){
-            bearToken = true
-            score.Bear ++
-        }
-        else if (enemy.Name == "Dragon" || instanceEnemy.Name == "Dragon"){
-            dragonMedal = true
-            score.Dragon ++
-        }
-        else{
-            score.Goblin ++
+        switch(enemy.Name){
+            case "Bear":
+                bearToken = true
+                score.Bear ++
+                break
+            case "Dragon":
+                dragonMedal = true
+                score.Dragon ++
+                break
+            default:
+                score.Goblin ++
         }
         
         reward(enemy)
@@ -389,27 +382,31 @@ const winBattle = (enemy) => { //Working!
     }
 }
 
-const badEnd = () => { //Edit!
+const badEnd = () => { //Working!
     if (playerStatus.HP <= 0 ){
         let notify = document.createElement("p")
         notify.setAttribute("class", "notify")
-        notify.innerHTML = `You died :(\nGame over! Going to the next screen!` //Redirect???
+        notify.innerHTML = `You died :(\nGame over! Going to the next screen in 3 seconds!`
         screen.appendChild(notify)
         gameOver.BadEnding = true
         localStorage.setItem("playerGameOver", JSON.stringify(gameOver))
-        location.replace("./pages/gameOver.html")
+        setTimeout(() => {
+            location.replace("./pages/gameOver.html")
+            }, 3000)
     }
 }
 
-const goodEnd = () =>{ //Edit!
+const goodEnd = () =>{ //Working!
     if (dragonMedal){
         let notify = document.createElement("p")
         notify.setAttribute("class", "notify")
-        notify.innerHTML = `Wow, you made it, you killed everybody! Going to the next screen!` //Redirect???
+        notify.innerHTML = `Wow, you made it, you killed everybody! Going to the next screen! Redirecting in 3 seconds!`
         screen.appendChild(notify)
         gameOver.GoodEnding = true
         localStorage.setItem("playerGameOver", JSON.stringify(gameOver))
-        location.replace("./pages/gameOver.html")
+        setTimeout(() => {
+            location.replace("./pages/gameOver.html")
+            }, 3000)
     }
 }
 
@@ -468,6 +465,7 @@ const mainBattle = (enemy) =>{ //Working!
         notify.innerHTML = `After the creature's death you rest for a bit before continuing your mission...\n
         Your HP are now ${playerStatus.HP}`
         screen.appendChild(notify)
+        goodEnd()
     }
     else{
         defenseCalc(enemy)
@@ -516,6 +514,10 @@ nameButton.onclick = () =>{
     nameEdit(nameEntered)
     screen.innerText = `\n${playerStatus.Name}, you have entered the forbidden cave, where great treasures await for those who are brave enough.\n` //reference for interactions
     localStorage.setItem("playerName", playerStatus.Name)
+    const buttons = document.querySelectorAll(".hidden")
+    for(let button of buttons){
+        button.classList.remove("hidden")
+    }
 }
 
 //---------Main Menu---------
@@ -540,7 +542,8 @@ backpack.onclick = () => {
         inputItem.setAttribute("id", "item-form")
         inputItem.innerHTML = `<label for="item-field"> Please enter the ID of the corresponding Item: </label>
         <input type="number" id="item-field" name="item-field">
-        <input type="button" id="button-item" value="Equip!"> `
+        <input type="button" id="button-item"
+        class="button" value="Equip!"> `
         screen.appendChild(inputItem)
         let itemField = document.getElementById("item-field")
         let itemButton = document.getElementById("button-item")
@@ -591,11 +594,11 @@ const exit = document.getElementById("exit")
 exit.onclick = () => {
     screen.innerText = "Are you sure you want to quit? You will be redirected to the Game Over screen directly!"
     let tempButtonYes = document.createElement("button")
-    tempButtonYes.setAttribute("class", "tempYes")
+    tempButtonYes.setAttribute("class", "button")
     tempButtonYes.innerText = "Yes"
     screen.appendChild(tempButtonYes)
     let tempButtonNo = document.createElement("button")
-    tempButtonNo.setAttribute("class", "tempNo")
+    tempButtonNo.setAttribute("class", "button")
     tempButtonNo.innerText = "No"
     screen.appendChild(tempButtonNo)
 
