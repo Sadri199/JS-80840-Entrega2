@@ -1,5 +1,8 @@
-//i - (i * 2) to change negative to positive
-// Player Data 
+//-----Player Data-----
+//Because i can't POST, all Player Data will be saved in localStorage
+
+const URL = "https://688e5da1a459d5566b14c3ac.mockapi.io/api/v1/" //Starting to build the connection
+
 const inventory = []
 
 const equippedItem = []
@@ -18,7 +21,7 @@ const gameOver = {
 
 let worldCounter = 0
 
-let playerStatus = { //Change from Array to Object
+let playerStatus = { 
     Name: "Hero",
     HP: 100,
     ATK: 20,
@@ -29,66 +32,87 @@ let playerStatus = { //Change from Array to Object
 let atkCounter = 0
 let defCounter = 0
 
-//Enemy Data
+//-----Enemy Data-----
 let instanceEnemy = []
 
 let enemyDefeated = false
 
-const enemies = []
+function getEnemies (){
+    fetch (URL + "enemy")
+    .then(response => response.json())
+    .then(data => {
+        const enemyList = data
+        console.log(enemyList)
+        return enemyList})
+    .catch((err) => console.log("Algo salió mal ", err))
+    .finally(()=> console.log("Data descargada de Mockapi con exito."))
+}
 
-class Enemy {
-    static ID = 0
-    constructor (Name, HP, ATK, DEF, Gold){
-        this.ID = ++Enemy.ID
-        this.Name = Name
-        this.HP = HP
-        this.ATK = ATK
-        this.DEF = DEF
-        this.Gold = Gold
+const enemies = [ //Change from Constructor to Array of Object Literals
+    {   
+        ID: 0,
+        Name: "Goblin",
+        HP: 25,
+        ATK: 5,
+        DEF: 5,
+        Gold: 10
+    },
+    {   
+        ID: 1,
+        Name: "Bear",
+        HP: 75,
+        ATK: 25,
+        DEF: 20,
+        Gold: 30
+    },
+    {   
+        ID: 2,
+        Name: "Dragon",
+        HP: 750,
+        ATK: 75,
+        DEF: 50,
+        Gold: 500
     }
-}
+]
 
-const enemyPush = (Name, HP, ATK, DEF, Gold) => { //I don't know a way to DRY this part.
-    let enemyData = new Enemy (Name, HP, ATK, DEF, Gold)
-    enemies.push(enemyData)
-}
-
-const enemy1 = enemyPush("Goblin", 25, 5, 5, 10)
-const enemy2 = enemyPush("Bear", 75, 25, 20, 30) //How does a bear carries gold?
-const enemy3 = enemyPush("Dragon", 750, 75, 100, 500)
-
-
-const enemiesStats = enemies.map(enemyStat => enemyStat)  
 
 let bearToken = false
 let dragonMedal = false
 
-//General Data
-const weapons =[]
+//-----General Data-----
+const weapons =[ //Change from Constructor to Object Literal
+    {
+        ID: 0,
+        Name: "Short Sword",
+        ATK: 10,
+        DEF: 5,
+        Price: 15
+    },
+    {
+        ID: 1,
+        Name: "Banana",
+        ATK: 5,
+        DEF: 0,
+        Price: 2
+    },
+    {
+        ID: 2,
+        Name: "Golden Sword",
+        ATK: 25,
+        DEF: 15,
+        Price: 175
+    },
+    {
+        ID: 3,
+        Name: "Gattling Gun",
+        ATK: 999,
+        DEF: 25,
+        Price: 1500
+    },
+]
 
-class Weapon {
-    static ID = 0
-    constructor (Name, ATK, DEF, Price){
-        this.ID = ++Weapon.ID
-        this.Name = Name
-        this.ATK = ATK
-        this.DEF = DEF
-        this.Price = Price
-    }
-}
 
-const weaponPush = (Name, ATK, DEF, Price) => { //I don't know a way to DRY this part.
-    let weaponData = new Weapon (Name, ATK, DEF, Price)
-    weapons.push(weaponData)
-}
-
-const weapon1 = weaponPush("Short Sword", 10, 5, 15)
-const weapon2 = weaponPush("Banana", 5, 0, 2)
-const weapon3 = weaponPush("Golden Sword", 25, 15, 175)
-const weapon4 = weaponPush("Gattling Gun", 999, 25, 1500)
-
-
-// Functions
+//-----Functions-----
 const nameEdit = (name) => { //Working!
     if (name != "" && name != null){
         playerStatus.Name = name
@@ -125,7 +149,7 @@ function backpackCheck (){ //Working!
         backpack.appendChild(itemLoop)
     })
 
-    if (equippedItem != 0){ //This is to render the currently equipped weapon //Edit order with CSS
+    if (equippedItem != 0){ //This is to render the currently equipped weapon
         let itemInHand = document.createElement("p")
         itemInHand.setAttribute("class", "weapon__equip")
         itemInHand.setAttribute("id", "itemInHand")
@@ -141,12 +165,12 @@ function statCheck () { //Working!
     stats.innerHTML = `\nHere are your Stats:\n`
     screen.appendChild(stats)
 
-    for(let stat in playerStatus) { //This renders each Stat of playerStatus
+    Object.keys(playerStatus).forEach(key => {
         let statLoop = document.createElement("p")
         statLoop.setAttribute("class", "stat")
-        statLoop.innerHTML = `\n ${stat} - ${playerStatus[stat]}\n`
+        statLoop.innerHTML = `\n ${key} - ${playerStatus[key]}\n`
         stats.appendChild(statLoop)
-    }
+    })
 }
 
 const equipAtt = (atk, def) => { //Working!
@@ -254,37 +278,37 @@ const enemyRandomizer = (randomNumber) =>{//Working!
 
     switch (worldCounter){
         case 0:
-            let tutorial = enemiesStats[0]
+            let tutorial = enemies[0]
             return tutorial
         case 1:
             if (randomNumber <= 5) {
-                let enemy = enemiesStats[0]
+                let enemy = enemies[0]
                 return enemy
             }
             else{
-                let enemy = enemiesStats[1] //Bear
+                let enemy = enemies[1] //Bear
                 return enemy
             }
         case 2:
             if (randomNumber <= 2){
-                let enemy = enemiesStats[0]
+                let enemy = enemies[0]
                 return enemy
             }
             else if (randomNumber >= 3){
-                let enemy = enemiesStats[1]
+                let enemy = enemies[1]
                 return enemy
             }
         case 3:
             if (randomNumber < 6){
-                let enemy = enemiesStats[1]
+                let enemy = enemies[1]
                 return enemy
             }
             else{
-                let enemy = enemiesStats[2]
+                let enemy = enemies[2]
                 return enemy
             }
         default:
-            let enemy = enemiesStats[2]
+            let enemy = enemies[2]
             return enemy
         }
 }
@@ -301,7 +325,7 @@ const assignEnemy = (enemy) =>{ //Working! not happy with this one...
         case 2:
             instanceEnemy = enemy //Dragon
             break
-        default: //If enemy undefined comes here
+        default: //If enemy is "undefined" we go here
             goodEnd()
     }
     return instanceEnemy
@@ -474,7 +498,7 @@ const mainBattle = (enemy) =>{ //Working!
 }
 
 const loopBattle = (actualEnemy) =>{ //Working!
-    //El orden sería choose > assign > main battle > attackCalc > winBattle > defenseCalc > badEnd y loop
+    //Order is choose > assign > main battle > attackCalc > winBattle > defenseCalc > badEnd and loop
     screen.innerText = ""
     action.innerText = "Fight!"
     let notifyEnemy = document.createElement("p")
@@ -486,7 +510,6 @@ const loopBattle = (actualEnemy) =>{ //Working!
     screen.appendChild(notifyEnemy)
     notifyEnemy.innerHTML = `Get ready to fight against ${actualEnemy.Name}! Their current HP is ${actualEnemy.HP}!`
     mainBattle(actualEnemy)
-    //Algo anda mal porque se queda trancado en el goblin con hp negativa
 }
 
 //---------Start of the game---------
@@ -522,7 +545,7 @@ nameButton.onclick = () =>{
 
 //---------Main Menu---------
 
-//=> Primero va Inventory
+//=> First goes "Inventory"
 const backpack = document.getElementById("backpack")
 backpack.onclick = () => {
     //------Open Backpack, show what you have.
@@ -573,14 +596,14 @@ backpack.onclick = () => {
     localStorage.setItem("weaponEquipped",JSON.stringify(equippedItem))
 }
 
-//=> Segundo va Stats (esperemos que sea más corto)
+//=> Second thing is Stats
 const stats = document.getElementById("stats")
 stats.onclick = () => {
     screen.innerText = ""
     statCheck()
 }
 
-//=> Tercero las peleas y el botón Dynamic (ahora viene lo heavy)
+//=> Third is Fight
 const action = document.getElementById("action")
 action.innerText = "Advance!"
 action.onclick = () => {
@@ -589,7 +612,7 @@ action.onclick = () => {
     loopBattle(actualEnemy)
 }
 
-//=> Cuarto es Exit, que por ahora da Game Over (no me da tiempo a implementar una forma de guardar partidas)
+//=> Fourth is Exit
 const exit = document.getElementById("exit")
 exit.onclick = () => {
     screen.innerText = "Are you sure you want to quit? You will be redirected to the Game Over screen directly!"

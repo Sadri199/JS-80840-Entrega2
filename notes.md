@@ -1,39 +1,33 @@
-## Checklist entrega (por ahora lo subo, después lo escondo)
+## Checklist entrega final
 
-[x] - Evaluar Javascript, ver que se puede mejorar, que se saca.
-    [x] - Cambio de arrays a Clases en los stats, items, enemigos, todo.
-    [x] - Que datos se guardan en local? Stats? Items?
-    [x] - Funciones de Orden Superior (Find, Filter)
-    [ ] -  (Opcional) Danger level (nuevo counter, para agregar enemigos a la lista de posibles encuentros, podría aumentar drop a medida que sube) Sería la dificultad. 
-    [ ] -  (Opcional) Implementación de Math.random() en donde amerite. Encuentros, criticos, dropeo de gold e items. roundup y rounddown para no trabajar con floats.
-    [ ] -  (Opcional) Health System, ya no recupera vida cuando termina una pelea. Sistema con pociones y tal vez una fuente (encuentro random). 
-    [ ] -  (Opcional) Tienda, si hay oro hay alguien que venda items, que compre items también. Posible sistema de regateo. 
-    [x] - Console.log migra a eventos, principalmente click y tengo que evaluar si permito escritura o si hago todo click.
-    [ ] - (Opcional) Modo Debug, Regenerar HP, dar Items, dar Oro, lo que sea.
-    [ ] -  (Opcional) Fight cambiarlo a Action, dinámico el texto del botón, en base al evento (del juego) que esté pasando 
-    [ ] -  (Opcional) Inventory va a tener que permitir dos acciones, Equip y Use (nueva, para curarse)
-    [x] - Goodbye va a tener un botón exit, al hacer click preguntar si se borran los datos de local o no (continuar partida) 
-    [ ] -  (Opcional) No se puede modularizar, pero si puedo tener diferentes js 
+[ ] - Evaluar Javascript, ver que se puede mejorar, que se saca.
+    [x] - Dejar comentarios en Inglés, todos (Correción entrega 2)
+    [ ] - Forzar elección de nombre (podría hacerse con Sweetalert) (Correción entrega 2)
+    [ ] - Reemplazo For in / For of por For Each, validar donde hacer esto. (Correción entrega 2) 2 de 3
+    [x] - Cambio de Constructors a Objetos Literales
+    [ ] - Fetch y MockAPI, indagar bien como armar esto
+    [ ] - localStorage se queda, solamente se hace get de MockApi
+    [ ] - Sweetalert o Toastify
+    [ ] - Si llegamos a gameOver desaparecer buttons mientras se redirecciona
     
-[x] - Maquetear html, pensar como se va a ver la web.
-    [x] - Arranca con una pantalla dando la bienvenida, pide nombre con un input y submit. Guarda nombre en localStorage.
-    [x] - p, grande, donde todo lo que se pasa en console log se va a pasar ahí (excepto lo debug).
-    [x] - Inventory va a ser un botón, luego tengo que evaluar si pide texto o si agrega items con otros botones.
-    [x] - Fight va a ser un botón, podria ser dinámico en base a lo que esté pasando (encontras una tienda, un enemigo).
-    [ ] - (Opcional) Cómo represento los diferentes eventos? La tienda habrá que escribir o presionar un botón?
-    [ ] - (Opcional)  Botones debug, activados mediante algún keypress medio raro (pensar una palabra clave). Invisibles hasta que se active ese evento.
-    [x] - Gameover, tanto bueno como malo, misma página o guarda en local, hace un get, en base a los datos los devuelve en una nueva página que te permite borrar todo para comenzar de nuevo??????????????
+[ ] - Maquetear html, pensar que editar
+    [ ] - Validar que habría que agregar o editar
     
-[x] - Maquetear CSS, 
-    [x] - Flex o Box ??????
-    [x] - Qué fuente?
-    [x] - Qué paleta de colores?
-    [x] - Tamaños de textArea, Input y Botones. Cómo lo quiero tener armado?
-    [ ] - (Opcional)  Debug, tiene que estar display hidden con una clase, cuando se activa evento cambia a la clase con display inline?
-    [ ] -  (Opcional) Animaciones?? por ejemplo un cambio de backgroundColor tipo degrade cuando se ataca, cuando se recibe daño, cuando se cura
+[ ] - Maquetear CSS, pensar que editar
+    [ ] - Validar que habría que agregar o editar
     
-[x] - Tiene clases?
-[x] - Guarda algo en LocalStorage? Get de LocalStorage? Remove y Clear de LocalStorage?
-[x] - Eventos funcionan correctamente?
+[ ] - Tome en cuenta todo lo que me indicaron en la entrega anterior?
+[ ] - Consignas entrega 3
+    [x] - 2 JS
+    [x] - Arrays de objetos literales a json/mockapi
+    [ ] - JSON y/o API con fetch, try-catch-finally
+    [x] - Estructura de archivos y carpetas
+    [x] - Todo con DOM y Eventos
+    [x] - Circuito de la información completo
+    [ ] - Incluir una librería JS de las vistas
+    [x] - NADA de prompt, confirm o alert
+
+
+
 
     

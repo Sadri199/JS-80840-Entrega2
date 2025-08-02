@@ -1,7 +1,7 @@
 //---------Data Here---------
 let userName = localStorage.getItem("playerName") //String
-let userBackpack = JSON.parse(localStorage.getItem("backpack")) //JSON, iba a hacer algo pero no me da el tiempo
-let userEquipItem = JSON.parse(localStorage.getItem("weaponEquipped")) //JSON, iba a hacer algo pero no me da el tiempo
+let userBackpack = JSON.parse(localStorage.getItem("backpack")) //JSON
+let userEquipItem = JSON.parse(localStorage.getItem("weaponEquipped")) //JSON
 let userScore = JSON.parse(localStorage.getItem("playerScore")) //JSON
 let userGameOver = JSON.parse(localStorage.getItem("playerGameOver")) //JSON
 
@@ -13,7 +13,7 @@ for(let [key,value] of arrayEndings){
     }
 }
 
-const reasonGameOver = (ending) => { //Me quede acá
+const reasonGameOver = (ending) => {
     let flavorText = ""
     switch (ending){
         case "ExitEnding":
@@ -42,7 +42,7 @@ const home = document.createElement("button")
 home.setAttribute("class", "button")
 home.innerText = "Go Back"
 
-//=> Borrada de localStorage
+//=> localStorage delete
 const clearData = document.createElement("button")
 clearData.setAttribute("class", "button")
 clearData.innerText = "Clear Data!"
@@ -57,7 +57,7 @@ clearData.onclick = () => {
 
 }
 
-//=> Return a Index
+//=> Return to Index
 screen.appendChild(home)
 home.onclick = () => {
     screen.innerText = "Going back"
