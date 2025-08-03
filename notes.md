@@ -2,13 +2,13 @@
 
 [ ] - Evaluar Javascript, ver que se puede mejorar, que se saca.
     [x] - Dejar comentarios en Inglés, todos (Correción entrega 2)
-    [ ] - Forzar elección de nombre (podría hacerse con Sweetalert) (Correción entrega 2)
-    [ ] - Reemplazo For in / For of por For Each, validar donde hacer esto. (Correción entrega 2) 2 de 3
+    [x] - Forzar elección de nombre (podría hacerse con Sweetalert) (Correción entrega 2)
+    [x] - Reemplazo For in / For of por For Each, validar donde hacer esto. (Correción entrega 2)
     [x] - Cambio de Constructors a Objetos Literales
     [ ] - Fetch y MockAPI, indagar bien como armar esto
-    [ ] - localStorage se queda, solamente se hace get de MockApi
-    [ ] - Sweetalert o Toastify
-    [ ] - Si llegamos a gameOver desaparecer buttons mientras se redirecciona
+    [x] - localStorage se queda, solamente se hace get de MockApi
+    [x] - Sweetalert o Toastify
+    [ ] - Si llegamos a gameOver desaparecer buttons mientras se redirecciona, evaluar countdown
     
 [ ] - Maquetear html, pensar que editar
     [ ] - Validar que habría que agregar o editar
@@ -16,7 +16,7 @@
 [ ] - Maquetear CSS, pensar que editar
     [ ] - Validar que habría que agregar o editar
     
-[ ] - Tome en cuenta todo lo que me indicaron en la entrega anterior?
+[x] - Tome en cuenta todo lo que me indicaron en la entrega anterior?
 [ ] - Consignas entrega 3
     [x] - 2 JS
     [x] - Arrays de objetos literales a json/mockapi
@@ -24,7 +24,7 @@
     [x] - Estructura de archivos y carpetas
     [x] - Todo con DOM y Eventos
     [x] - Circuito de la información completo
-    [ ] - Incluir una librería JS de las vistas
+    [x] - Incluir una librería JS de las vistas
     [x] - NADA de prompt, confirm o alert
 
 

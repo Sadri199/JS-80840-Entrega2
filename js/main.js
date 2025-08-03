@@ -1,7 +1,120 @@
+//-----Downloaded Data----- //Im here, have to see if it works or not
+const URL = "https://688e5da1a459d5566b14c3ac.mockapi.io/api/v1/" //Starting to build the connection
+
+let weaponsDownloaded = false
+let enemiesDownloaded = false
+let toastData = [] //Empty array to capture all the values from dynamicFinally
+
+function getEnemies (){
+    fetch (URL + "enemy")
+    .then(response => {
+      if (response.ok){
+        return response.json()}     
+      throw new Error ("Something went wrong, data from Enemy Database couldn't not be accessed!") //The catch from below only triggers for type errors, not for http errors.
+      })
+    .then(data => {
+        enemiesDownloaded = true
+        toastData = dynamicFinally("Enemy Database")
+        const enemyList = data
+        confirmNotify("Enemy Database")
+        return enemyList})
+    .catch((err) => errorNotify(err),
+      toastData = dynamicFinally("Weapon Database"))
+    .finally(()=>  setTimeout(()=> {
+      finallyNotify(toastData[0],toastData[1],toastData[2])}, 1500))
+}
+function getWeapons (){
+    fetch (URL + "weapon")
+    .then(response => {
+      if (response.ok){
+        return response.json()}     
+      throw new Error ("Something went wrong, data from Weapon Database couldn't not be accessed!") //The catch from below only triggers for type errors, not for http errors.
+      })
+    .then(data => {
+        weaponsDownloaded = true
+        toastData = dynamicFinally("Weapon Database")
+        const weaponList = data
+        confirmNotify("Weapon Database")
+        return weaponList})
+    .catch((err) => errorNotify(err),
+      toastData = dynamicFinally("Weapon Database"))
+    .finally(() => 
+      setTimeout(()=> {
+      finallyNotify(toastData[0],toastData[1],toastData[2])}, 1500)
+      )
+}
+
+//-----Toastify notifications go here-----
+const errorNotify = (text) => { 
+  Toastify({
+    text: text,
+    duration: -1,
+    close: true,
+    gravity: "top", 
+    position: "center", 
+    stopOnFocus: true, 
+    className: "pop-up",
+    style:{
+      background: "#91230aff",
+      color: "#e8e0e0ff"
+    },
+  }).showToast();
+}
+
+const confirmNotify = (text) => { 
+  Toastify({
+    text: `Data from ${text} is being downloaded.`,
+    duration: 1500,
+    close: true,
+    gravity: "top", 
+    position: "center", 
+    stopOnFocus: true, 
+    className: "pop-up",
+    style:{
+      background: "#230903",
+    },
+  }).showToast();
+}
+
+const finallyNotify = (text, duration, style) => { 
+  Toastify({
+    text: text,
+    duration: duration,
+    close: true,
+    gravity: "top", 
+    position: "center", 
+    stopOnFocus: true, 
+    className: "pop-up",
+    style: style
+  }).showToast();
+}
+
+const dynamicFinally = (db) => {
+  if (!enemiesDownloaded || !weaponsDownloaded){
+    let text = `A Critical Error occured and the data from ${db} wasn't downloaded correctly. The game will not run.`
+    let duration = -1
+    let style = {
+      background: "#91230aff",
+      color: "#e8e0e0ff"
+    }
+    return [text, duration, style]
+  }
+  else if (enemiesDownloaded || weaponsDownloaded){
+    let text = `All data from ${db} has being downloaded correctly.`
+    let duration = 3500
+    let style = {
+      background: "#230903",
+    }
+    return [text, duration, style]
+  }
+}
+const savedWeapon = getWeapons()
+const savedEnemy = getEnemies()
+//-----Downloaded Data-----
+
+//-----Static Data-----
 //-----Player Data-----
 //Because i can't POST, all Player Data will be saved in localStorage
-
-const URL = "https://688e5da1a459d5566b14c3ac.mockapi.io/api/v1/" //Starting to build the connection
 
 const inventory = []
 
@@ -37,16 +150,6 @@ let instanceEnemy = []
 
 let enemyDefeated = false
 
-function getEnemies (){
-    fetch (URL + "enemy")
-    .then(response => response.json())
-    .then(data => {
-        const enemyList = data
-        console.log(enemyList)
-        return enemyList})
-    .catch((err) => console.log("Algo salió mal ", err))
-    .finally(()=> console.log("Data descargada de Mockapi con exito."))
-}
 
 const enemies = [ //Change from Constructor to Array of Object Literals
     {   
@@ -75,11 +178,11 @@ const enemies = [ //Change from Constructor to Array of Object Literals
     }
 ]
 
-
 let bearToken = false
 let dragonMedal = false
 
-//-----General Data-----
+//-----Weapon Data-----
+
 const weapons =[ //Change from Constructor to Object Literal
     {
         ID: 0,
@@ -110,25 +213,19 @@ const weapons =[ //Change from Constructor to Object Literal
         Price: 1500
     },
 ]
-
+//-----Static Data-----
 
 //-----Functions-----
 const nameEdit = (name) => { //Working!
-    if (name != "" && name != null){
-        playerStatus.Name = name
-        let notify = document.createElement("p")
-        notify.setAttribute("class", "notify")
-        notify.innerHTML = `Your name will be "${playerStatus.Name}" from now on.`
-        screen.appendChild(notify)
-        screen.removeChild(inputName)
+        if (name != "" && name != null){
+            playerStatus.Name = name
+            let notify = document.createElement("p")
+            notify.setAttribute("class", "notify")
+            notify.innerHTML = `Your name will be "${playerStatus.Name}" from now on.`
+            screen.appendChild(notify)
+            screen.removeChild(inputName)
+            }
     }
-    else{
-        let notify = document.createElement("p")
-        notify.innerHTML = `I'll guess I will call you "${playerStatus.Name}" since you didn´t chose a name.`
-        screen.appendChild(notify)
-        screen.removeChild(inputName)
-    }
-}
 
 function backpackCheck (){ //Working!
     let backpack = document.createElement("div") //This renders your current Backpack
@@ -533,14 +630,29 @@ screen.appendChild(inputName) //First the parent, then the child
 let nameField = document.getElementById("name-field")
 let nameButton = document.getElementById("button-name")
 nameButton.onclick = () =>{
-    const nameEntered = nameField.value
+    const nameEntered = nameField.value.trim() //I don't like Regex and this was faster to implement, forces Only Whitespaces to be transformed in an empty string
+    if (nameEntered === "" || nameEntered === null){
+        Toastify({
+                text: "Please enter a valid name, no empty text allowed!",
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "center",
+                stopOnFocus: true,
+                className: "pop-up",
+                style:{
+                    background: "#230903",
+                },
+                }).showToast();
+        return false
+    }
     nameEdit(nameEntered)
     screen.innerText = `\n${playerStatus.Name}, you have entered the forbidden cave, where great treasures await for those who are brave enough.\n` //reference for interactions
     localStorage.setItem("playerName", playerStatus.Name)
     const buttons = document.querySelectorAll(".hidden")
-    for(let button of buttons){
+    buttons.forEach(button => {
         button.classList.remove("hidden")
-    }
+    })
 }
 
 //---------Main Menu---------
