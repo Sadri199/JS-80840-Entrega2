@@ -5,9 +5,11 @@
     [x] - Forzar elección de nombre (podría hacerse con Sweetalert) (Correción entrega 2)
     [x] - Reemplazo For in / For of por For Each, validar donde hacer esto. (Correción entrega 2)
     [x] - Cambio de Constructors a Objetos Literales
-    [ ] - Fetch y MockAPI, indagar bien como armar esto
+    [x] - Fetch y MockAPI, indagar bien como armar esto
     [x] - localStorage se queda, solamente se hace get de MockApi
     [x] - Sweetalert o Toastify
+    [ ] - toastify para quipar objeto, matar bicho, gameovers, borrada de datos...
+    [x] - boton para ingresar nombre disable hasta que se procesen datos de fetch, pensar como implementar, función dentro de fetch
     [ ] - Si llegamos a gameOver desaparecer buttons mientras se redirecciona, evaluar countdown
     
 [ ] - Maquetear html, pensar que editar

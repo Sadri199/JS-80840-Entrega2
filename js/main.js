@@ -4,6 +4,8 @@ const URL = "https://688e5da1a459d5566b14c3ac.mockapi.io/api/v1/" //Starting to 
 let weaponsDownloaded = false
 let enemiesDownloaded = false
 let toastData = [] //Empty array to capture all the values from dynamicFinally
+let enemyList = []
+let weaponList = []
 
 function getEnemies (){
     fetch (URL + "enemy")
@@ -15,9 +17,9 @@ function getEnemies (){
     .then(data => {
         enemiesDownloaded = true
         toastData = dynamicFinally("Enemy Database")
-        const enemyList = data
-        confirmNotify("Enemy Database")
-        return enemyList})
+        enemyList = data
+        enableMe()
+        confirmNotify("Enemy Database")})
     .catch((err) => errorNotify(err),
       toastData = dynamicFinally("Weapon Database"))
     .finally(()=>  setTimeout(()=> {
@@ -33,9 +35,9 @@ function getWeapons (){
     .then(data => {
         weaponsDownloaded = true
         toastData = dynamicFinally("Weapon Database")
-        const weaponList = data
-        confirmNotify("Weapon Database")
-        return weaponList})
+        weaponList = data
+        enableMe()
+        confirmNotify("Weapon Database")})
     .catch((err) => errorNotify(err),
       toastData = dynamicFinally("Weapon Database"))
     .finally(() => 
@@ -44,6 +46,11 @@ function getWeapons (){
       )
 }
 
+const enableMe = () => { //So the idea is a failsafe if fetch takes too long and the user wants to advance.
+    if (enemiesDownloaded && weaponsDownloaded){
+        document.getElementById("button-name").disabled = false
+    }
+}
 //-----Toastify notifications go here-----
 const errorNotify = (text) => { 
   Toastify({
@@ -59,6 +66,8 @@ const errorNotify = (text) => {
       color: "#e8e0e0ff"
     },
   }).showToast();
+  let screen = document.getElementById("screen")
+  screen.innerText = "CRITICAL ERROR HAS OCCURED, THE GAME CAN'T RUN BECAUSE IMPORTANT DATA IS MISSING!"
 }
 
 const confirmNotify = (text) => { 
@@ -145,74 +154,24 @@ let playerStatus = {
 let atkCounter = 0
 let defCounter = 0
 
-//-----Enemy Data-----
+//-----Enemy & Weapon Data-----
 let instanceEnemy = []
 
 let enemyDefeated = false
 
+const mapData = (arrayName) => { //This was done so the data is "generated" after the fetch ends, being honest I don't really like it, if the fetch took more time, this would still break because its making a map of an empty array.
+    return arrayName.map(item => {return{...item}}) 
+}
 
-const enemies = [ //Change from Constructor to Array of Object Literals
-    {   
-        ID: 0,
-        Name: "Goblin",
-        HP: 25,
-        ATK: 5,
-        DEF: 5,
-        Gold: 10
-    },
-    {   
-        ID: 1,
-        Name: "Bear",
-        HP: 75,
-        ATK: 25,
-        DEF: 20,
-        Gold: 30
-    },
-    {   
-        ID: 2,
-        Name: "Dragon",
-        HP: 750,
-        ATK: 75,
-        DEF: 50,
-        Gold: 500
-    }
-]
+let enemies = [] //cloned data from mapData goes here
+
+let weapons = [] //cloned data from mapData goes here
 
 let bearToken = false
 let dragonMedal = false
 
-//-----Weapon Data-----
+let randomNumber = Math.floor(Math.random()*10)
 
-const weapons =[ //Change from Constructor to Object Literal
-    {
-        ID: 0,
-        Name: "Short Sword",
-        ATK: 10,
-        DEF: 5,
-        Price: 15
-    },
-    {
-        ID: 1,
-        Name: "Banana",
-        ATK: 5,
-        DEF: 0,
-        Price: 2
-    },
-    {
-        ID: 2,
-        Name: "Golden Sword",
-        ATK: 25,
-        DEF: 15,
-        Price: 175
-    },
-    {
-        ID: 3,
-        Name: "Gattling Gun",
-        ATK: 999,
-        DEF: 25,
-        Price: 1500
-    },
-]
 //-----Static Data-----
 
 //-----Functions-----
@@ -293,11 +252,7 @@ function equip (id){ //Working!
             inventory.splice(onlyId,1)
             equippedItem.pop() //We take the previous object
             equippedItem.push(item)
-
-            let notify = document.createElement("p")
-            notify.setAttribute("class", "notify")
-            notify.innerHTML = `You removed ${item} from your Backpack! \nYou added ${equippedItem[0]} to your hand!\n`
-            screen.appendChild(notify)
+            commonToastify(`You removed ${item.Name} from your Backpack! \nYou added ${equippedItem[0].Name} to your hand!`)
             equipAtt(item.ATK, item.DEF)
             screen.innerText = `\nDone equipping, returning to main menu.\n`
     }
@@ -359,8 +314,8 @@ const critDef = () => { //Working!
 }
 
 const chooseEnemy = () => { //Working!
+    console.log("This is the random number", randomNumber)
     if (enemyDefeated) {
-        let randomNumber = Math.floor(Math.random()*10)
         let enemy = enemyRandomizer(randomNumber)
         enemyDefeated = false
         return enemy
@@ -396,7 +351,7 @@ const enemyRandomizer = (randomNumber) =>{//Working!
                 return enemy
             }
         case 3:
-            if (randomNumber < 6){
+            if (randomNumber <= 9){
                 let enemy = enemies[1]
                 return enemy
             }
@@ -472,7 +427,7 @@ const winBattle = (enemy) => { //Working!
     if (enemy.HP <= 0){
         worldCounter ++
         enemyDefeated = true
-
+        commonToastify("Enemy Defeated!")
         let notify = document.createElement("p")
         notify.setAttribute("class", "notify")
         notify.innerHTML = `Wow, you defeated the ${enemy.Name}!`
@@ -493,7 +448,6 @@ const winBattle = (enemy) => { //Working!
         
         reward(enemy)
         localStorage.setItem("playerScore", JSON.stringify(score))
-        return enemyDefeated 
     }
     else {
         let notify = document.createElement("p")
@@ -509,6 +463,7 @@ const badEnd = () => { //Working!
         notify.setAttribute("class", "notify")
         notify.innerHTML = `You died :(\nGame over! Going to the next screen in 3 seconds!`
         screen.appendChild(notify)
+        commonToastify("Redirecting soon!")
         gameOver.BadEnding = true
         localStorage.setItem("playerGameOver", JSON.stringify(gameOver))
         setTimeout(() => {
@@ -524,6 +479,7 @@ const goodEnd = () =>{ //Working!
         notify.innerHTML = `Wow, you made it, you killed everybody! Going to the next screen! Redirecting in 3 seconds!`
         screen.appendChild(notify)
         gameOver.GoodEnding = true
+        commonToastify("Redirecting soon!")
         localStorage.setItem("playerGameOver", JSON.stringify(gameOver))
         setTimeout(() => {
             location.replace("./pages/gameOver.html")
@@ -610,30 +566,9 @@ const loopBattle = (actualEnemy) =>{ //Working!
 }
 
 //---------Start of the game---------
-inventory.push(weapons[0], weapons[1]) //At the beginning of the game this items are added.
-localStorage.setItem("backpack", JSON.stringify(inventory))
-
-localStorage.setItem("playerScore", JSON.stringify(score))
-
-const saveEquip = localStorage.setItem("weaponEquipped",JSON.stringify(equippedItem))
-
-const screen = document.getElementById("screen")
-screen.innerText = ":D \nThat is you, someone looking for treasure and stuff, but...\nYou never said your name, what should I call you?\n"
-
-let inputName = document.createElement("form")
-inputName.setAttribute("id", "name-form")
-inputName.innerHTML = `<label for="name-field"> Enter your name here: </label>
-<input type="text" id="name-field" name="name-field">
-<input type="button" id="button-name" class="button" value="Done!"> `
-screen.appendChild(inputName) //First the parent, then the child
-
-let nameField = document.getElementById("name-field")
-let nameButton = document.getElementById("button-name")
-nameButton.onclick = () =>{
-    const nameEntered = nameField.value.trim() //I don't like Regex and this was faster to implement, forces Only Whitespaces to be transformed in an empty string
-    if (nameEntered === "" || nameEntered === null){
-        Toastify({
-                text: "Please enter a valid name, no empty text allowed!",
+const commonToastify = (text) =>{
+    Toastify({
+                text: text,
                 duration: 3000,
                 close: true,
                 gravity: "top",
@@ -644,15 +579,45 @@ nameButton.onclick = () =>{
                     background: "#230903",
                 },
                 }).showToast();
+}
+
+const saveEquip = localStorage.setItem("weaponEquipped",JSON.stringify(equippedItem))
+
+const screen = document.getElementById("screen")
+screen.innerText = ":D \nThat is you, someone looking for treasure and stuff, but...\nYou never said your name, what should I call you?\n"
+
+let inputName = document.createElement("form")
+inputName.setAttribute("id", "name-form")
+inputName.innerHTML = `<label for="name-field"> Enter your name here: </label>
+<input type="text" id="name-field" name="name-field">
+<input type="button" id="button-name" class="button" value="Done!" disabled> `
+screen.appendChild(inputName) //First the parent, then the child
+
+let nameField = document.getElementById("name-field")
+let nameButton = document.getElementById("button-name")
+nameButton.onclick = () =>{
+    const nameEntered = nameField.value.trim() //I don't like Regex and this was faster to implement, forces Only Whitespaces to be transformed in an empty string
+    if (nameEntered === "" || nameEntered === null){
+        commonToastify("Please enter a valid name, no empty text allowed!")
         return false
     }
+    //-----Processing of the initial information-----
     nameEdit(nameEntered)
+    
+    enemies = mapData(enemyList)
+    weapons = mapData(weaponList)
+
+    inventory.push(weapons[0], weapons[1])
+    localStorage.setItem("backpack", JSON.stringify(inventory))
+    localStorage.setItem("playerScore", JSON.stringify(score))
     screen.innerText = `\n${playerStatus.Name}, you have entered the forbidden cave, where great treasures await for those who are brave enough.\n` //reference for interactions
     localStorage.setItem("playerName", playerStatus.Name)
     const buttons = document.querySelectorAll(".hidden")
     buttons.forEach(button => {
         button.classList.remove("hidden")
     })
+    let title = document.getElementById("title")
+    title.innerText = "The Elder Scrolls 6, but even better!"
 }
 
 //---------Main Menu---------

@@ -5,6 +5,21 @@ let userEquipItem = JSON.parse(localStorage.getItem("weaponEquipped")) //JSON
 let userScore = JSON.parse(localStorage.getItem("playerScore")) //JSON
 let userGameOver = JSON.parse(localStorage.getItem("playerGameOver")) //JSON
 
+const commonToastify = (text) =>{ //Yeah, i'm recycling the function.
+    Toastify({
+                text: text,
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "center",
+                stopOnFocus: true,
+                className: "pop-up",
+                style:{
+                    background: "#230903",
+                },
+                }).showToast();
+}
+
 ending = ""
 let arrayEndings = Object.entries(userGameOver)
 for(let [key,value] of arrayEndings){
@@ -34,6 +49,7 @@ const reasonGameOver = (ending) => {
 //---------Render Here---------
 const screen = document.getElementById("screen")
 
+commonToastify("Welcome to the Game Over screen!")
 screen.innerText = `Hello ${userName}, I hope you enjoyed the game!
 You arrived to this screen because you: ${reasonGameOver(ending)}\n
 You killed: Goblins => ${userScore.Goblin}\nBears=> ${userScore.Bear}\nDragon => ${userScore.Dragon}\n
@@ -49,6 +65,7 @@ clearData.innerText = "Clear Data!"
 screen.appendChild(clearData)
 clearData.onclick = () => {
     screen.innerText = "Erasing all your data :("
+    commonToastify('Data erased succesfully, press the "Go Back" button to return to the main screen!')
     localStorage.clear()
     screen.appendChild(home)
     home.onclick = () => {
