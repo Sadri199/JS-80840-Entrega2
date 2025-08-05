@@ -96,6 +96,12 @@ label{
     padding: 10px 0;
 }
 
+.notifyReward{
+    padding: 10px 0;
+    color: #42317D;
+    background-color: #E8F985;
+}
+
 .button{
     border-radius: 15%;
     color: #230903;
@@ -115,4 +121,9 @@ label{
     font-size: 1rem;
     font-style: normal;
     color: #ADA0D9;
+}
+
+.criticalError {
+    background-color: #121111;
+    color: #FF7070;
 }

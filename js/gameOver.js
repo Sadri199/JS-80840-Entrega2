@@ -5,7 +5,7 @@ let userEquipItem = JSON.parse(localStorage.getItem("weaponEquipped")) //JSON
 let userScore = JSON.parse(localStorage.getItem("playerScore")) //JSON
 let userGameOver = JSON.parse(localStorage.getItem("playerGameOver")) //JSON
 
-const commonToastify = (text) =>{ //Yeah, i'm recycling the function.
+const commonToastify = (text) =>{ //Yeah, I'm recycling this function.
     Toastify({
                 text: text,
                 duration: 3000,

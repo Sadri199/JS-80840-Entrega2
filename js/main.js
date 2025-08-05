@@ -1,5 +1,5 @@
-//-----Downloaded Data----- //Im here, have to see if it works or not
-const URL = "https://688e5da1a459d5566b14c3ac.mockapi.io/api/v1/" //Starting to build the connection
+//-----Downloaded Data-----
+const URL = "https://688e5da1a459d5566b14c3ac.mockapi.io/api/v1/"
 
 let weaponsDownloaded = false
 let enemiesDownloaded = false
@@ -12,7 +12,7 @@ function getEnemies (){
     .then(response => {
       if (response.ok){
         return response.json()}     
-      throw new Error ("Something went wrong, data from Enemy Database couldn't not be accessed!") //The catch from below only triggers for type errors, not for http errors.
+      throw new Error ("Something went wrong, data from Enemy Database couldn't not be accessed!") //The catch from below only triggers for typeErrors, not for http errors.
       })
     .then(data => {
         enemiesDownloaded = true
@@ -30,7 +30,7 @@ function getWeapons (){
     .then(response => {
       if (response.ok){
         return response.json()}     
-      throw new Error ("Something went wrong, data from Weapon Database couldn't not be accessed!") //The catch from below only triggers for type errors, not for http errors.
+      throw new Error ("Something went wrong, data from Weapon Database couldn't not be accessed!") //The catch from below only triggers for typeErrors, not for http errors.
       })
     .then(data => {
         weaponsDownloaded = true
@@ -66,7 +66,11 @@ const errorNotify = (text) => {
       color: "#e8e0e0ff"
     },
   }).showToast();
+  let body = document.body
+  let title = document.getElementById("title")
   let screen = document.getElementById("screen")
+  body.setAttribute("class", "criticalError")
+  title.innerText = "SORRY :("
   screen.innerText = "CRITICAL ERROR HAS OCCURED, THE GAME CAN'T RUN BECAUSE IMPORTANT DATA IS MISSING!"
 }
 
@@ -80,7 +84,7 @@ const confirmNotify = (text) => {
     stopOnFocus: true, 
     className: "pop-up",
     style:{
-      background: "#230903",
+      background: "rgba(35, 9, 3, 0.85)",
     },
   }).showToast();
 }
@@ -112,7 +116,7 @@ const dynamicFinally = (db) => {
     let text = `All data from ${db} has being downloaded correctly.`
     let duration = 3500
     let style = {
-      background: "#230903",
+      background: "rgba(35, 9, 3, 0.85)",
     }
     return [text, duration, style]
   }
@@ -123,7 +127,7 @@ const savedEnemy = getEnemies()
 
 //-----Static Data-----
 //-----Player Data-----
-//Because i can't POST, all Player Data will be saved in localStorage
+//Because I can't POST, all Player Data will be saved in localStorage
 
 const inventory = []
 
@@ -159,7 +163,7 @@ let instanceEnemy = []
 
 let enemyDefeated = false
 
-const mapData = (arrayName) => { //This was done so the data is "generated" after the fetch ends, being honest I don't really like it, if the fetch took more time, this would still break because its making a map of an empty array.
+const mapData = (arrayName) => { //This was done so the data is "generated" after the fetch ends.
     return arrayName.map(item => {return{...item}}) 
 }
 
@@ -170,11 +174,12 @@ let weapons = [] //cloned data from mapData goes here
 let bearToken = false
 let dragonMedal = false
 
+let actualEnemy = {}
 let randomNumber = Math.floor(Math.random()*10)
 
 //-----Static Data-----
 
-//-----Functions-----
+//-----Game Functions-----
 const nameEdit = (name) => { //Working!
         if (name != "" && name != null){
             playerStatus.Name = name
@@ -314,14 +319,13 @@ const critDef = () => { //Working!
 }
 
 const chooseEnemy = () => { //Working!
-    console.log("This is the random number", randomNumber)
     if (enemyDefeated) {
         let enemy = enemyRandomizer(randomNumber)
         enemyDefeated = false
         return enemy
     }
-    else{
-        let enemy = enemyRandomizer() //First fight is a Goblin, mandatory, like a tutorial
+    else if (!enemyDefeated){
+        let enemy = enemyRandomizer() 
         return enemy
     }
 }
@@ -329,7 +333,7 @@ const chooseEnemy = () => { //Working!
 const enemyRandomizer = (randomNumber) =>{//Working!
 
     switch (worldCounter){
-        case 0:
+        case 0: //First fight is a Goblin, mandatory, like a tutorial
             let tutorial = enemies[0]
             return tutorial
         case 1:
@@ -365,11 +369,11 @@ const enemyRandomizer = (randomNumber) =>{//Working!
         }
 }
 
-const assignEnemy = (enemy) =>{ //Working! not happy with this one...
+const assignEnemy = (enemy) =>{ //Working!
     let enemyId = enemy.ID
     switch(enemyId){
         case 0:
-            instanceEnemy = enemy //Golbin
+            instanceEnemy = enemy //Goblin
             break
         case 1:
             instanceEnemy = enemy //Bear
@@ -463,6 +467,10 @@ const badEnd = () => { //Working!
         notify.setAttribute("class", "notify")
         notify.innerHTML = `You died :(\nGame over! Going to the next screen in 3 seconds!`
         screen.appendChild(notify)
+        const buttons = document.querySelectorAll(".button")
+        buttons.forEach(button => {
+            button.classList.add("hidden")
+        })
         commonToastify("Redirecting soon!")
         gameOver.BadEnding = true
         localStorage.setItem("playerGameOver", JSON.stringify(gameOver))
@@ -478,6 +486,10 @@ const goodEnd = () =>{ //Working!
         notify.setAttribute("class", "notify")
         notify.innerHTML = `Wow, you made it, you killed everybody! Going to the next screen! Redirecting in 3 seconds!`
         screen.appendChild(notify)
+        const buttons = document.querySelectorAll(".button")
+        buttons.forEach(button => {
+            button.classList.add("hidden")
+        })
         gameOver.GoodEnding = true
         commonToastify("Redirecting soon!")
         localStorage.setItem("playerGameOver", JSON.stringify(gameOver))
@@ -504,7 +516,7 @@ const reward = (enemy) => { //Working!
             inventory.push(weapons[2]) //Golden Sword
             
             let notify = document.createElement("p")
-            notify.setAttribute("class", "notify")
+            notify.setAttribute("class", "notifyReward")
             notify.innerHTML = `The ${enemy.Name} dropped a ${weapons[2].Name}.`
             screen.appendChild(notify)
         }
@@ -512,7 +524,7 @@ const reward = (enemy) => { //Working!
             inventory.push(weapons[3]) //Gattling Gun
             
             let notify = document.createElement("p")
-            notify.setAttribute("class", "notify")
+            notify.setAttribute("class", "notifyReward")
             notify.innerHTML = `The ${enemy.Name} dropped a ${weapons[3].Name}.`
             screen.appendChild(notify)
         }
@@ -542,6 +554,7 @@ const mainBattle = (enemy) =>{ //Working!
         notify.innerHTML = `After the creature's death you rest for a bit before continuing your mission...\n
         Your HP are now ${playerStatus.HP}`
         screen.appendChild(notify)
+        actualEnemy = chooseEnemy() 
         goodEnd()
     }
     else{
@@ -551,7 +564,6 @@ const mainBattle = (enemy) =>{ //Working!
 }
 
 const loopBattle = (actualEnemy) =>{ //Working!
-    //Order is choose > assign > main battle > attackCalc > winBattle > defenseCalc > badEnd and loop
     screen.innerText = ""
     action.innerText = "Fight!"
     let notifyEnemy = document.createElement("p")
@@ -576,7 +588,7 @@ const commonToastify = (text) =>{
                 stopOnFocus: true,
                 className: "pop-up",
                 style:{
-                    background: "#230903",
+                    background: "rgba(35, 9, 3, 0.85)",
                 },
                 }).showToast();
 }
@@ -596,7 +608,7 @@ screen.appendChild(inputName) //First the parent, then the child
 let nameField = document.getElementById("name-field")
 let nameButton = document.getElementById("button-name")
 nameButton.onclick = () =>{
-    const nameEntered = nameField.value.trim() //I don't like Regex and this was faster to implement, forces Only Whitespaces to be transformed in an empty string
+    const nameEntered = nameField.value.trim() //I don't like Regex and this was faster to implement, forces Only Whitespaces to be transformed into a empty string
     if (nameEntered === "" || nameEntered === null){
         commonToastify("Please enter a valid name, no empty text allowed!")
         return false
@@ -606,11 +618,11 @@ nameButton.onclick = () =>{
     
     enemies = mapData(enemyList)
     weapons = mapData(weaponList)
-
+    actualEnemy = chooseEnemy()
     inventory.push(weapons[0], weapons[1])
     localStorage.setItem("backpack", JSON.stringify(inventory))
     localStorage.setItem("playerScore", JSON.stringify(score))
-    screen.innerText = `\n${playerStatus.Name}, you have entered the forbidden cave, where great treasures await for those who are brave enough.\n` //reference for interactions
+    screen.innerText = `\n${playerStatus.Name}, you have entered the forbidden cave, where great treasures await for those who are brave enough.\n`
     localStorage.setItem("playerName", playerStatus.Name)
     const buttons = document.querySelectorAll(".hidden")
     buttons.forEach(button => {
@@ -684,7 +696,6 @@ stats.onclick = () => {
 const action = document.getElementById("action")
 action.innerText = "Advance!"
 action.onclick = () => {
-    let actualEnemy = chooseEnemy()
     assignEnemy(actualEnemy)
     loopBattle(actualEnemy)
 }
