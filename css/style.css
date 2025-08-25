@@ -28,7 +28,6 @@ label{
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 50%
 }
 
 #screen{
@@ -36,9 +35,10 @@ label{
     flex-grow: 1;
     text-align: center;
     padding-top: 20px;
-    padding-bottom: 20px;
-    overflow: scroll;
-    height: 450px
+    padding-bottom: 50px;
+    height: 70%;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 #name-field, #item-field{
@@ -76,8 +76,14 @@ label{
     padding-top: 25px;
     display: flex;
     justify-content: space-around;
+    position:fixed;
+    width:100%;
+    bottom:0px;
 }
 
+#name-form{
+    padding-top: 20px;
+    }
 /* Second Classes */
 
 .tempMessage{
@@ -126,4 +132,38 @@ label{
 .criticalError {
     background-color: #121111;
     color: #FF7070;
+}
+
+@media screen and (max-width: 600px) {
+    body{
+        height: 100vh;
+    }
+    #title{
+    font-size: 1.5rem;
+    padding-bottom: 5px;
+    }
+    #screen{
+    font-size: 1rem;
+    height: 100%;
+    }
+    #name-form{
+    padding-top: 25px;
+    }
+    #main-game{
+    align-items: normal;
+    justify-content: stretch;
+    height: 100%;
+    }
+    #stats-show{
+    justify-content: stretch;
+    flex-direction: column;
+    }
+    #UI{
+        flex-wrap: wrap;
+        flex-direction: column;
+    }
+    .button{
+    font-size: 1rem;
+    border-radius: 5%;
+    }
 }
